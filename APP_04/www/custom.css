@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+body {
+  margin: 0 !important;
+  padding: 0 !important
+}
+
+.navbar {
+  margin-bottom: 0 !important;
+  border: none; /* Opcional: remove bordas extras */
+}
+
+.container-fluid{
+  padding: 0 !important;
+  font-family: 'Montserrat';
+  background-color: white
+}
+
+/* Header que contêm ícones - lado direito*/
+.skin-blue .main-header .logo {
+  background-color: #FED90F;
+  color: #272A28;
+  font-weight: 900;
+  text-shadow: 2px 3px 10px rgba(0,0,0,0.50);;
+}
+
+.skin-blue .main-header .logo:hover{
+  background-color: default;
+}
+
+/* Header que contêm título do dashboard - lado esquerdo */
+.skin-blue .main-header .navbar { 
+  background-color: #FED90F; 
+}
+
+.skin-blue .main-header .logo:hover {
+  background-color: #FED90F;
+}
+
+/* Alterando Sidebar Principal */
+
+.skin-blue .main-sidebar {
+  background-color: #333333; /* Roxo Exemplo */
+}
+
+/* Colocando A opção Sobre por último */
+.sidebar-menu > li:last-child {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      border-top: 1px solid #4b646f; /* Opcional: uma linha divisória */
+}
+
+/* Aumenta o espaço entre o ícone (FontAwesome) e o texto */
+.sidebar-menu > .menu-item > li > a > .fa, 
+.sidebar-menu > li > a > .fas, 
+.sidebar-menu > li > a > .far,
+.sidebar-menu > li > a > .glyphicon { 
+    margin-right: 12px; /* <--- Aumente ou diminua este valor (o padrão é uns 5px) */
+}
+
+/* Estilizando página Sobre */
+.title_sobre{
+  margin: 0px 5px;
+  color: black;
+  font-weight: 700;
+}
+
+.texto_sobre{
+  margin: 0 10px;
+  padding-right: 10px;
+  padding-top: 10px;
+  line-height: 2.5em;
+  font-weight: 500;
+  font-size: 14px;
+  text-align: justify;
+  text-indent: 30px;
+}
