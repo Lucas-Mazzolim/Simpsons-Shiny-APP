@@ -1,4 +1,5 @@
-# install.packages(c("shiny", "tidyverse", "tm", "wordcloud", "readr", "RColorBrewer","plotly"))
+# install.packages(c("shiny", "tidyverse", "tm", "wordcloud", 
+# "readr", "RColorBrewer","plotly"))
 
 library(shiny)
 library(tidyverse)
@@ -164,3 +165,4 @@ ui <- fluidPage(title = "Os Simpsons", style = "background-color: #FFFBAD;",
     )
   )
 )
+
