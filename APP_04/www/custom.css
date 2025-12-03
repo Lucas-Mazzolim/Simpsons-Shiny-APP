@@ -7,7 +7,7 @@ body {
 
 .navbar {
   margin-bottom: 0 !important;
-  border: none; /* Opcional: remove bordas extras */
+  border: none;
 }
 
 .container-fluid{
@@ -18,23 +18,38 @@ body {
 
 /* Header que contêm ícones - lado direito*/
 .skin-blue .main-header .logo {
-  background-color: #FED90F;
-  color: #272A28;
+  background-color: gold;
+  color: white;
   font-weight: 900;
-  text-shadow: 2px 3px 10px rgba(0,0,0,0.50);;
+  text-shadow: 1px 2px 10px rgba(000, 000, 000, 0.75)
 }
 
 .skin-blue .main-header .logo:hover{
-  background-color: default;
+  background-color: gold; 
+  cursor: pointer;
+}
+
+/* Alterando cor do Menu Hámburguer*/
+.sidebar-toggle{
+  color:  #f4f4f4 !important;
+}
+
+.sidebar-toggle:hover {
+    /* Defina para a mesma cor padrão para desativar a mudança */
+    color: white !important; 
+    
+    /* Opcional: Remove o fundo/sombra que pode aparecer */
+    background-color: transparent !important;
 }
 
 /* Header que contêm título do dashboard - lado esquerdo */
 .skin-blue .main-header .navbar { 
-  background-color: #FED90F; 
+  background-color: gold; 
+  cursor: pointer;
 }
 
 .skin-blue .main-header .logo:hover {
-  background-color: #FED90F;
+  background-color: 
 }
 
 /* Alterando Sidebar Principal */
@@ -51,6 +66,10 @@ body {
       border-top: 1px solid #4b646f; /* Opcional: uma linha divisória */
 }
 
+.sidebar-menu li a{
+  font-size: 12px;
+}
+
 /* Aumenta o espaço entre o ícone (FontAwesome) e o texto */
 .sidebar-menu > .menu-item > li > a > .fa, 
 .sidebar-menu > li > a > .fas, 
@@ -59,14 +78,55 @@ body {
     margin-right: 12px; /* <--- Aumente ou diminua este valor (o padrão é uns 5px) */
 }
 
+/* Estilizando títulos de cada aba do dashboard */
+
+.kpi_title, .tendencias_title, .geografia_title{
+  margin: 10px 0px;
+  color: white;
+  font-weight: 700;
+  text-align: center;
+}
+
+.title_div{
+  background: #0B2A4C;
+  height: 3em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab_description{
+  text-align: center;
+  margin-top: 10px;
+  font-size: 300;
+  line-height: 25px;
+}
+
+/* Estilizando Filtros de Dados */
+.data_filters{
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  column-gap: 20px;
+}
+
+.selectize-input.multi{
+  height: fit-content;
+  overflow-x: auto;
+  overflow-y: auto;
+  white-space: nowrap;  
+}
+
 /* Estilizando página Sobre */
-.title_sobre{
+
+.sobre-title{
   margin: 0px 5px;
   color: black;
   font-weight: 700;
 }
 
-.texto_sobre{
+.sobre-text{
   margin: 0 10px;
   padding-right: 10px;
   padding-top: 10px;
@@ -75,4 +135,48 @@ body {
   font-size: 14px;
   text-align: justify;
   text-indent: 30px;
+}
+
+.classesEfontes-title{
+  margin-top: 1.5em;
+}
+
+/* Customização do Card da área sobre */
+
+.card-container{
+  width: 20%;
+  padding: 25px;
+  border: 1px black solid;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  box-shadow: 1px 2px 10px rgba(000, 000, 000, 0.50),
+  background-color: #f5f5f5;
+  margin-top: 1.5em;
+}
+
+.card-container:hover{
+  box-shadow: 1px 2px 10px rgba(000, 000, 000, 0.75),
+  margin-bottom: -5px;
+  padding: 26px
+}
+
+.integrantes-cards{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-description{
+  text-align: justify;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-name{
+  font-size: 24px;
+  font-weight: bold;
 }
