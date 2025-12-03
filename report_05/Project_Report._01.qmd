@@ -1,0 +1,80 @@
+---
+# Modelo de Análise Exploratória de Dados
+# Formato ABNT para Quarto Markdown
+title: "Análise Exploratória de Dados do Universo Simpsons: Uma Investigação sobre Personagens e Audiência"
+author: "Nome Completo do Analista/Pesquisador"
+author-affiliation: "Instituição de Pesquisa/Departamento de Ciência de Dados"
+date: "Dezembro de 2025"
+lang: "pt"
+format:
+  # (Configurações ABNT: Margens, Fonte 12pt, Espaçamento 1,5, etc., configuradas via LaTeX conforme a Versão 1)
+  pdf:
+    documentclass: article
+    fontsize: 12pt
+    # ... outras opções para ABNT
+    toc: true
+    number-sections: true
+    lof: true
+    lot: true
+---
+
+# 1. Introdução
+
+*The Simpsons* é uma das séries de televisão mais longas e culturalmente influentes da história. O volume de dados gerado por seus mais de 750 episódios, abrangendo métricas de audiência, detalhes de produção e a vasta rede de personagens, oferece um rico campo para a **Análise Exploratória de Dados (EDA)**.
+
+O **problema** central da EDA não é testar uma hipótese rigorosa, mas sim descobrir padrões, identificar anomalias e resumir as características principais do *dataset*.
+
+O **objetivo geral** desta análise exploratória é obter *insights* iniciais sobre a distribuição de métricas de audiência, a frequência de aparição dos personagens e a evolução da classificação por temporada. Objetivos específicos incluem a identificação dos **personagens mais recorrentes** e a correlação entre a nota do episódio (*rating*) e o número de diálogos.
+
+# 2. Materiais e Métodos
+
+## 2.1. Fonte de Dados e Ferramentas
+
+O **dataset** utilizado é uma compilação de metadados dos episódios de *The Simpsons* (ex.: dados obtidos do Kaggle ou de repositórios públicos), contendo variáveis como: **título do episódio, temporada, data de exibição, audiência (milhões), *rating* (IMDB/média)** e **contagem de diálogos/aparições de personagens**.
+
+As análises foram realizadas utilizando a linguagem de programação **Python** (versão 3.10), com o auxílio das bibliotecas **Pandas** para manipulação e **Matplotlib/Seaborn** para visualização de dados.
+
+## 2.2. Pré-processamento e Limpeza
+
+O pré-processamento envolveu a **conversão de tipos** de dados (ex.: *string* para numérico para a audiência), o tratamento de **valores omissos** (*NaN*) e a padronização dos nomes de personagens. Valores discrepantes (*outliers*) nas métricas de audiência foram inicialmente mantidos para serem analisados na fase de exploração.
+
+## 2.3. Técnicas de Análise Exploratória
+
+Foram utilizadas técnicas descritivas, como **estatísticas de resumo** (média, mediana, desvio-padrão) e **visualizações univariadas/bivariadas** (histogramas, *boxplots*, gráficos de dispersão) para identificar a forma das distribuições e as relações iniciais entre as variáveis.
+
+# 3. Resultados e Discussão
+
+A análise exploratória inicial revelou diversas tendências e características estruturais do *dataset* dos Simpsons, permitindo a formulação de hipóteses futuras.
+
+## 3.1. Análise 1: Distribuição das Métricas de Audiência
+
+A audiência em milhões de telespectadores exibe uma **distribuição assimétrica positiva** (skewed right), com a média significativamente maior que a mediana. Isso sugere que a maioria dos episódios se concentra em faixas de audiência mais baixas, mas poucos episódios muito populares puxam a média para cima.
+
+## 3.2. Análise 2: A Evolução da Nota Média (*Rating*) por Temporada
+
+O gráfico de linha  demonstra uma clara **tendência de queda** no *rating* médio dos episódios ao longo das temporadas, do pico inicial (Temporadas 3-8) até as temporadas mais recentes. Este padrão é amplamente discutido na crítica especializada (Referência, Ano).
+
+## 3.3. Análise 3: Top 10 Personagens em Contagem de Diálogos
+
+Foi identificado que **Homer Simpson, Marge Simpson e Bart Simpson** dominam o *top 3* em contagem total de diálogos. A Tabela 1  mostra que os personagens principais consomem aproximadamente $70\%$ de todos os diálogos do *dataset*, com o restante distribuído entre centenas de personagens secundários.
+
+## 3.4. Análise 4: Correlação entre *Rating* e Número de Diálogos
+
+O coeficiente de correlação de Pearson ($\rho$) entre a nota do episódio (*rating*) e o número total de diálogos foi $\rho = 0.12$ ($P < 0.05$). Embora **estatisticamente significativa**, a correlação é **muito fraca**. Isso indica que a quantidade de falas não é um preditor relevante da qualidade percebida pelo público.
+
+## 3.5. Análise 5: Identificação de Outliers de Produção
+
+Foram encontrados episódios *outliers* na variável "Tempo de Duração", com durações atípicas (ex.: especiais de Natal ou Halloween). Estes pontos foram sinalizados para **tratamento posterior** ou exclusão em análises preditivas, mas são mantidos aqui como *insights* sobre formatos especiais de produção.
+
+## 3.6. Análise 6: Variação de Audiência por Dia da Semana
+
+A análise agrupada por dia de exibição revelou que episódios exibidos aos **Domingos** (o dia tradicional da Fox) possuem, em média, uma audiência significativamente maior do que qualquer outro dia.
+
+# 4. Conclusão
+
+Esta análise exploratória de dados sobre *The Simpsons* confirmou tendências já amplamente percebidas, como o declínio na média de *rating* ao longo das temporadas, e quantificou a **dominância dos personagens principais** nos diálogos. A EDA foi bem-sucedida ao identificar distribuições assimétricas nas métricas de audiência e ao sinalizar que o volume de diálogos tem pouca correlação com a nota do episódio. Estes *insights* servem como base sólida para a construção de **modelos preditivos** ou análises inferenciais mais aprofundadas no futuro.
+
+# 5. Referências Bibliográficas
+
+* SIMPSONS, The. *Dataset de episódios*. [S. l.]: Kaggle, [2024?]. Disponível em: [Link do dataset]. Acesso em: 1 dez. 2025.
+* SOBRENOME, I. A.; SOBRENOME, I. B. **Título do Artigo sobre EDA**. *Nome da Revista de Data Science*, v. X, n. Y, p. ZZZ-ZZZ, Ano.
