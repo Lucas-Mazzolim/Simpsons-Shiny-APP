@@ -14,27 +14,30 @@ write_csv(simpsons_locations, './Data_01/locations.csv')
 write_csv(simpsons_script_lines, './Data_01/script_lines.csv')
 
 # Salvando dados em tabela central
-simpsons_characters |>
-  glimpse()
-
-simpsons_episodes |>
-  glimpse()
-
-simpsons_script_lines |>
-  glimpse()
 
 tabela_mestre = simpsons_script_lines |>
-  left_join(
-    simpsons_episodes,
-    by = c('episode_id' = 'id')
+  left_join(simpsons_episodes,by = c('episode_id' = 'id')
   ) |>
-  left_join(
-    simpsons_characters,
-    by = c('character_id' = 'id')
+  left_join(simpsons_characters,by = c('character_id' = 'id')
   ) |>
-  left_join(
-    simpsons_locations,
-    by = c('location_id' = 'id')
+  left_join(simpsons_locations, by = c('location_id' = 'id')
   )
 
 write_csv(tabela_mestre, './Data_01/tabela_mestre.csv')
+
+#criando metadados
+
+# dialogos totais e diversidade de locais por episódio
+metadados_episodio <- tabela_mestre |>
+  group_by(episode_id) |>
+  summarise(
+    total_dialogos = n(),  # Conta quantas linhas existem neste episódio
+    location_diversity = n_distinct(location_id, na.rm = TRUE) # Conta locais únicos
+  )
+
+tabela_mestre_final <- tabela_mestre |>
+  left_join(metadados_episodio, by = "episode_id")
+
+write_csv(tabela_mestre_final, './Data_01/tabela_mestre_final.csv')
+
+
