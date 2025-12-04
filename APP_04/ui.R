@@ -46,8 +46,32 @@ ui <- fluidPage(
     dashboardBody(
        tabItems(
          tabItem(
-            tabName = 'sobre',
-            Sobre('Sobre')
+           tabName = 'correlacoes',
+           h1('Análise vai aqui')
+         ),
+         tabItem(
+           tabName = 'episodios',
+           h1('Análise vai aqui')
+         ),
+         tabItem(
+           tabName = 'texto',
+           h1('Análise vai aqui')
+         ),
+         tabItem(
+           tabName = 'tempo',
+           h1('Análise vai aqui')
+         ),
+         tabItem(
+           tabName = 'categorias',
+           h1('Análise vai aqui')
+         ),
+         tabItem(
+           tabName = 'panorama',
+           h1('Análise vai aqui')
+         ),
+         tabItem(
+           tabName = 'sobre',
+           Sobre('Sobre')
          )
        )
       )

@@ -43,7 +43,15 @@ Sobre = function(id){
       card('Lucas William', 'Meu nome é Lucas William, tenho 18 anos. Gosto de programar, escrever e praticar esportes.', '#'),
       class = 'integrantes-cards'
     ),
-    h2('Dados e Fontes', class = 'dadosEfontes-title')
+    h2('Dados e Fontes', class = 'dadosEfontes-title'),
+    p('⮕ Conjunto de dados utilizados no projeto:',
+      a("Simpsons Dataset", href="https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-02-04/readme.md"),
+      class = 'dataset-link'
+    ),
+    p('⮕ Relatório final da análise realizada:',
+      a("[LINK AQUI]", href="#"),
+      class = 'dataset-link'
+    )
   )
 }
 

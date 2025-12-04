@@ -131,14 +131,24 @@ body {
   padding-right: 10px;
   padding-top: 10px;
   line-height: 2.5em;
-  font-weight: 500;
+  font-weight: 400;
   font-size: 14px;
   text-align: justify;
   text-indent: 30px;
 }
 
 .classesEfontes-title{
-  margin-top: 1.5em;
+  margin: 0;
+  margin-top: 10px;
+}
+
+.integrantes-title{
+  margin: 0;
+  margin-top: 10px;
+}
+
+.dataset-link{
+  margin-left: 2px;
 }
 
 /* Customização do Card da área sobre */
@@ -155,12 +165,15 @@ body {
   box-shadow: 1px 2px 10px rgba(000, 000, 000, 0.50),
   background-color: #f5f5f5;
   margin-top: 1.5em;
+  margin-left: 5px;
+  margin-right: 3px;
 }
 
 .card-container:hover{
-  box-shadow: 1px 2px 10px rgba(000, 000, 000, 0.75),
-  margin-bottom: -5px;
-  padding: 26px
+  box-shadow: 1px 2px 10px rgba(000, 000, 000, 0.75);
+  scale: 110%;
+  z-index: 10 !important;
+  cursor: pointer;
 }
 
 .integrantes-cards{
