@@ -1,0 +1,41 @@
+body {
+  font-family: 'Arial';
+  font-size: 12pt;
+  line-height: 1.5;
+  color: black;
+}
+
+.quarto-default {
+  max-width: 21cm;
+  padding-top: 3cm;    
+  padding-bottom: 2cm; 
+  padding-left: 3cm;
+  padding-right: 2cm;
+  margin: 0 auto; 
+}
+
+p {
+  text-align: justify;
+  text-indent: 1.25cm;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold;
+  text-align: left;
+  line-height: 1.5;
+  margin-top: 2.5cm;
+  margin-bottom: 1.5cm;
+}
+
+
+h1 {
+  text-transform: uppercase;
+  font-size: 12pt;
+}
+
+h2, h3, h4, h5, h6 {
+  text-transform: none;
+  font-size: 12pt;
+}

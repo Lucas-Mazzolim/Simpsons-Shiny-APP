@@ -1,0 +1,174 @@
+---
+title: "Os Simpsons em Números"
+format: html
+editor: visual
+lang: pt
+toc: true
+fig-width: 5
+fig-height: 5
+fig-align: center
+bibliography: referencia.bib
+csl: estilo_abnt.csl
+css: style.css
+---
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+library(tidytuesdayR)
+library(tidyverse)
+library(tidytext)
+
+tuesdata <- tidytuesdayR::tt_load('2025-02-04')
+
+simpsons_characters <- tuesdata$simpsons_characters
+simpsons_episodes <- tuesdata$simpsons_episodes
+simpsons_locations <- tuesdata$simpsons_locations
+simpsons_script_lines <- tuesdata$simpsons_script_lines
+
+episodes_clean <- simpsons_episodes %>% 
+  filter(!is.na(us_viewers_in_millions),
+         !is.na(imdb_rating)) #Limpeza da base de dados
+
+
+script <- simpsons_script_lines %>%
+  left_join(simpsons_episodes %>% select(id, season), 
+            by = c("episode_id" = "id"))
+
+frases_com_personagem <- script %>%
+  left_join(simpsons_characters, by = c("character_id" = "id")) %>%
+  filter(!is.na(spoken_words), spoken_words != "") %>%
+  count(name, spoken_words, sort = TRUE)
+```
+
+# 1. Introdução
+
+Os Simpsons é a série animada há mais tempo no ar na TV dos Estados Unidos. Sua estreia aconteceu no ano de 1989 e permanece no ar até hoje. [@BritannicaSimpsons]
+
+Em mais de 30 anos de exibição, a série já se envolveu em inúmeras polêmicas, inclusive com o público brasileiro, graças a um episódio da 13ª temporada, que mostrava o Brasil como um lugar violento, onde as ruas eram infestadas de macacos e as pessoas se movimentavam dançando conga. [@CanaltechSimpsonsBrasil] Ao longo dos anos, a audiência do show diminuiu consideravelmente, mas a família Simpson ainda se mantém relevante, com episódios assistidos por milhões de pessoas, não apenas nos Estados Unidos, mas em todo o mundo. [@SchneiderSimpsons]
+
+Neste trabalho, será apresentada uma análise dos episódios das temporadas 21 a 26, exibidos entre os anos de 2010 a 2016, considerando dados de audiência, avaliação do público e caracaterísticas dos diálogos entre os personagens. Pretende-se avaliar as tendências de variação da audiência e da avaliação popular dos episódios ao longo do tempo, e também a existência de correlações entre essas duas variáveis. Serão verificadas, também, tendências de variação no volume de palavras faladas pelos personagens, possíveis correlações entre este volume e a avaliação popular, além de diferenças relacionadas ao gênero dos personagens.
+
+# 2. Materiais e Métodos
+
+## Conjunto de Dados
+
+O conjunto de dados foi obtido a partir do repositório GitHub do projeto Tidy Tuesday, que disponibiliza, semanalmente, conjuntos de dados para desafios e prática da comunidade de ciência de dados. Para a obtenção dos dados, utilizou-se o pacote *tidytuesdayR* através do RStudio. O código R para obtenção dos dados é mostrado a seguir:
+
+```{r, eval=FALSE}
+install.packages("tidytuesdayR")
+
+tuesdata <- tidytuesdayR::tt_load('2025-02-04')
+
+simpsons_characters <- tuesdata$simpsons_characters
+simpsons_episodes <- tuesdata$simpsons_episodes
+simpsons_locations <- tuesdata$simpsons_locations
+simpsons_script_lines <- tuesdata$simpsons_script_lines
+```
+
+O conjunto é composto por 4 arquivos de valores separados por vírgulas:
+
+| Arquivo | Tamanho | Descrição |
+|----|----|----|
+| simpsons_characters.csv | 222 kb | Informações dos personagens: nome e gênero |
+| simpsons_episodes.csv | 30 kb | Informações sobre os episódios: título, ano de exibição, temporada, audiência nos EUA, avaliação do público; |
+| simpsons_locations.csv | 174 kb | Nomes dos locais exibidos nos episódios |
+| simpsons_script_lines.csv | 6.88 Mb | Linhas de falas dos personagens por episódio |
+
+```{r, echo=FALSE}
+
+glimpse(simpsons_characters)
+glimpse(simpsons_episodes)
+glimpse(simpsons_locations)
+glimpse(simpsons_script_lines)
+
+```
+
+## Preparação dos Dados
+
+Remoção de observações NA das variáveis de audiência e avaliação IMDb
+
+```{r, eval=FALSE}
+
+episodes_clean <- simpsons_episodes %>% 
+  filter(!is.na(us_viewers_in_millions),
+         !is.na(imdb_rating))
+
+```
+
+União da tabela de lista de episódios com a tabela de diálogos
+
+```{r, eval=FALSE}
+
+script <- simpsons_script_lines %>%
+  left_join(simpsons_episodes %>% select(id, season), 
+            by = c("episode_id" = "id"))
+
+```
+
+Exclusão dos registros vazios ou NA da variável de palavras faladas
+
+```{r eval=FALSE}
+
+frases_com_personagem <- script %>%
+  left_join(simpsons_characters, by = c("character_id" = "id")) %>%
+  filter(!is.na(spoken_words), spoken_words != "") %>%
+  count(name, spoken_words, sort = TRUE)
+
+```
+
+```{r}
+library(tidyverse)
+tabela_generos <- simpsons_characters %>%
+  filter(gender != 'NA') %>%
+  mutate(
+    gender = if_else(gender == 'f', 'Feminino', 'Masculino')
+  ) %>%
+  group_by(gender) %>%
+  summarise("total" = n())
+tabela_generos
+```
+
+# 3. Resultados e Discussão
+
+```{r}
+views_by_season <- episodes_clean %>%
+  group_by(season) %>%
+  summarise(
+    total_viewers = sum(us_viewers_in_millions, na.rm = TRUE),
+    mean_viewers = mean(us_viewers_in_millions, na.rm = TRUE),
+    n = n()
+  )
+views_by_season
+
+ggplot(views_by_season, aes(season, mean_viewers)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Audiência média por temporada",
+    x = "Temporada",
+    y = "Audiência média (milhões)"
+  ) +
+  theme_minimal()
+```
+
+```{r}
+episodes_clean %>% 
+  ggplot(aes(x = us_viewers_in_millions, y = imdb_rating)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Audiência vs IMDb Rating — The Simpsons",
+    x = "Audiência nos EUA (milhões)",
+    y = "Nota no IMDb"
+  )
+
+ggplot(episodes_clean, aes(x = us_viewers_in_millions, y = imdb_rating)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(
+    title = "Correlação entre audiência e nota no IMDB – The Simpsons",
+    x = "Audiência (milhões)",
+    y = "Nota no IMDB"
+  ) +
+  theme_minimal()
+```
