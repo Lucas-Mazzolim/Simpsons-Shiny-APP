@@ -43,7 +43,7 @@ ui <- fluidPage(
       
       hr(),
       
-      # 2. Dropdown de Personagem (Já existente)
+      # dropdown
       selectInput("personagem_selecionado",
                   "Escolha um Personagem (Destaque):",
                   choices = top_personagens_lista,
@@ -56,19 +56,19 @@ ui <- fluidPage(
       # Usando Abas para organizar melhor os gráficos
       tabsetPanel(
         tabPanel("Ranking de Falas", plotlyOutput("plot_barras", height = "500px")),
-        tabPanel("Nuvem de Palavras", plotOutput("plot_nuvem", height = "700px"))
+        tabPanel("Nuvem de Palavras", plotOutput("plot_nuvem", height = "600px"))
         
       )
     )
   )
 )
 
-# =========================================================
-# 3. SERVIDOR (SERVER)
-# =========================================================
+
+# SERVER
+
 server <- function(input, output) {
   
-  # --- DADOS REATIVOS (Filtros comuns) ---
+  #DADOS REATIVOS (filtros)
   
   # Dados filtrados APENAS pelo Slider de Temporada
   dados_por_temporada <- reactive({
@@ -77,7 +77,7 @@ server <- function(input, output) {
              season <= input$range_temporadas[2])
   })
   
-  # --- GRÁFICO 1: RANKING DE QUEM FALA MAIS (Bar Chart) ---
+  # GRÁFICO 2 - (Bar Chart)
   output$plot_barras <- renderPlotly({
     
     df_ranking <- dados_por_temporada() |>
@@ -90,20 +90,19 @@ server <- function(input, output) {
                                  y = total_falas,
                                  text = paste("Personagem:", raw_character_text, 
                                               "<br>Falas:", total_falas))) +
-      # AQUI ESTÁ A MUDANÇA DE COR:
+      
       geom_col(fill = "#FED90F", color = "black") + 
       coord_flip() +
       labs(title = paste("Top 15 Personagens (Temp.", input$range_temporadas[1], 
                          "até", input$range_temporadas[2], ")"),
            x = "", y = "Total de Linhas de Diálogo") +
       theme_minimal() +
-      # Ajuste para deixar o fundo branco mais limpo e destacar o amarelo
       theme(panel.grid.major.y = element_blank())
     
     ggplotly(p1, tooltip = "text")
   })
   
-  # --- GRÁFICO 3: NUVEM DE PALAVRAS (Word Cloud) ---
+  # -GRÁFICO 3 - (Word Cloud)
   output$plot_nuvem <- renderPlot({
     
     req(input$personagem_selecionado)
@@ -119,7 +118,6 @@ server <- function(input, output) {
       count(word, sort = TRUE) |>
       slice_head(n = 80)
     
-    # AQUI ESTÃO AS MUDANÇAS DE FONTE E TAMANHO:
     wordcloud(words = df_palavras$word, 
               freq = df_palavras$n, 
               min.freq = 1,
@@ -128,12 +126,10 @@ server <- function(input, output) {
               rot.per = 0.35, 
               colors = brewer.pal(8, "Dark2"),
               
-              # Aumentei a escala (Letra maior = 8, menor = 1.5)
               scale = c(8, 1.5), 
-              
-              # Mudei a fonte (tente "serif", "sans", "mono" ou "HersheySymbol")
+
               family = "sans", 
-              font = 2) # font=2 deixa em Negrito
+              font = 2) # font=2, negrito
   })
 }
 shinyApp(ui, server)
