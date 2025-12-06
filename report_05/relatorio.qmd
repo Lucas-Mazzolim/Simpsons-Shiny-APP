@@ -4,9 +4,13 @@ format: html
 editor: visual
 lang: pt
 toc: true
-fig-width: 5
-fig-height: 5
 fig-align: center
+fig-auto-id: true
+tbl-auto-id: true
+tbl-cap-location: bottom
+# crossref: 
+#   fig-prefix: "Gráfico"
+#   tbl-prefix: "Tabela"
 bibliography: referencia.bib
 csl: estilo_abnt.csl
 css: style.css
@@ -68,28 +72,101 @@ O conjunto é composto por 4 arquivos de valores separados por vírgulas:
 | simpsons_locations.csv | 174 kb | Nomes dos locais exibidos nos episódios |
 | simpsons_script_lines.csv | 6.88 Mb | Linhas de falas dos personagens por episódio |
 
-```{r, echo=FALSE}
+As estruturas completas das tabelas de dados são mostradas a seguir:
 
-glimpse(simpsons_characters)
-glimpse(simpsons_episodes)
-glimpse(simpsons_locations)
-glimpse(simpsons_script_lines)
+```{r, echo=FALSE}
+#| label: tbl-personagens
+#| tbl-cap: "Estrutura - Tabela Personagens"
+#| tbl-cap-location: top
+
+estrutura <- tibble(
+  Nome = names(simpsons_characters),
+  Tipo = sapply(simpsons_characters, class),
+  Exemplos = sapply(simpsons_characters, function(x) paste(head(x,3),collapse = ", "))
+)
+
+estrutura %>% 
+  knitr::kable(
+    format = "html",
+    col.names = c("Nome da Coluna", "Tipo", "Amostra"),
+    align = c('l', 'l', 'l')
+)
+
+```
+
+```{r, echo=FALSE}
+#| label: tbl-episodios
+#| tbl-cap: "Estrutura - Tabela Episódios"
+#| tbl-cap-location: top
+
+estrutura <- tibble(
+  Nome = names(simpsons_episodes),
+  Tipo = sapply(simpsons_episodes, class),
+  Exemplos = sapply(simpsons_episodes, function(x) paste(head(x,3),collapse = ", "))
+)
+
+estrutura %>% 
+  knitr::kable(
+    format = "html",
+    col.names = c("Nome da Coluna", "Tipo", "Amostra"),
+    align = c('l', 'l', 'l')
+)
+
+```
+
+```{r, echo=FALSE}
+#| label: tbl-locais
+#| tbl-cap: "Estrutura - Tabela Locais"
+#| tbl-cap-location: top
+
+estrutura <- tibble(
+  Nome = names(simpsons_locations),
+  Tipo = sapply(simpsons_locations, class),
+  Exemplos = sapply(simpsons_locations, function(x) paste(head(x,3),collapse = ", "))
+)
+
+estrutura %>% 
+  knitr::kable(
+    format = "html",
+    col.names = c("Nome da Coluna", "Tipo", "Amostra"),
+    align = c('l', 'l', 'l')
+)
+```
+
+```{r, echo=FALSE}
+#| label: tbl-dialogos
+#| tbl-cap: "Estrutura - Tabela Diálogos"
+#| tbl-cap-location: top
+
+estrutura <- tibble(
+  Nome = names(simpsons_script_lines),
+  Tipo = sapply(simpsons_script_lines, class),
+  Exemplos = sapply(simpsons_script_lines, function(x) paste(head(x,3),collapse = ", "))
+)
+
+estrutura %>% 
+  knitr::kable(
+    format = "html",
+    col.names = c("Nome da Coluna", "Tipo", "Amostra"),
+    align = c('l', 'l', 'l')
+)
 
 ```
 
 ## Preparação dos Dados
 
-Remoção de observações NA das variáveis de audiência e avaliação IMDb
+Inicialmente, para viabilizar as análises de audiência dos episódios, a tabela `simpsons_episodes` foi filtrada para remoção de observações NA das variáveis de audiência e avaliação IMDb, identificadas como `us_viewers_in_millions` e `imdb_rating`. Também foram excluídas as colunas `image_url e video_url`, que não teriam aplicabilidade para as análises desejadas. O preparo da tabela foi realizado utilizando o código a seguir:
 
 ```{r, eval=FALSE}
 
 episodes_clean <- simpsons_episodes %>% 
   filter(!is.na(us_viewers_in_millions),
-         !is.na(imdb_rating))
+         !is.na(imdb_rating)) %>%
+  select(-c(image_url,video_url))
 
 ```
 
-União da tabela de lista de episódios com a tabela de diálogos
+Para trabalhar com os diálogos dos personagens, foram unidas as tabelas de episódios, `simpsons_episodes` e de diálogos, `simpsons_script_lines`:
 
 ```{r, eval=FALSE}
 
@@ -99,7 +176,7 @@ script <- simpsons_script_lines %>%
 
 ```
 
-Exclusão dos registros vazios ou NA da variável de palavras faladas
+E finalmente, eliminaram-se as linhas da tabela que não correspondiam a diálogos, onde a coluna `spoken_words`encontrava-se vazia ou com valor NA.
 
 ```{r eval=FALSE}
 
@@ -125,6 +202,11 @@ tabela_generos
 # 3. Resultados e Discussão
 
 ```{r}
+#| label: fig-audiencia-temporada
+#| fig-cap: "Audiência média por temporada"
+
+
+
 views_by_season <- episodes_clean %>%
   group_by(season) %>%
   summarise(
@@ -144,6 +226,8 @@ ggplot(views_by_season, aes(season, mean_viewers)) +
   ) +
   theme_minimal()
 ```
+
+@fig-audiencia-temporada
 
 ```{r}
 episodes_clean %>% 
@@ -166,3 +250,9 @@ ggplot(episodes_clean, aes(x = us_viewers_in_millions, y = imdb_rating)) +
   ) +
   theme_minimal()
 ```
+
+# 4. Conclusão
+
+As análises realizadas indicam que não há aparente correlação entre o número de espectadores dos episódios de Os Simpsons nos EUA e as notas de avaliação destes episódios no site [IMDb](http://www.imdb.com), conforme pode ser visto no GRÁFICO XXX. A análise dos coeficientes de correlação de Pearson ano a ano, mostrada no GRÁFICO XXX, confirma essa conclusão. Embora seja possível perceber um aumento relativo desta correlação ao longo do tempo, apenas em uma das temporadas o coeficiente de Pearson esteve acima de 0,5, o que de fato caracteriza não haver correlação entre as variáveis.
+
+Por sua vez, no GRÁFICO XXX, observa-se que pode
