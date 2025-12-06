@@ -18,12 +18,6 @@ library(tidytuesdayR)
 library(tidyverse)
 library(tidytext)
 
-tuesdata <- tidytuesdayR::tt_load('2025-02-04')
-
-simpsons_characters <- tuesdata$simpsons_characters
-simpsons_episodes <- tuesdata$simpsons_episodes
-simpsons_locations <- tuesdata$simpsons_locations
-simpsons_script_lines <- tuesdata$simpsons_script_lines
 
 episodes_clean <- simpsons_episodes %>% 
   filter(!is.na(us_viewers_in_millions),
@@ -68,7 +62,7 @@ simpsons_script_lines <- tuesdata$simpsons_script_lines
 O conjunto é composto por 4 arquivos de valores separados por vírgulas:
 
 | Arquivo | Tamanho | Descrição |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | simpsons_characters.csv | 222 kb | Informações dos personagens: nome e gênero |
 | simpsons_episodes.csv | 30 kb | Informações sobre os episódios: título, ano de exibição, temporada, audiência nos EUA, avaliação do público; |
 | simpsons_locations.csv | 174 kb | Nomes dos locais exibidos nos episódios |
