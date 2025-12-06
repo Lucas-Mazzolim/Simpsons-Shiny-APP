@@ -57,6 +57,8 @@ Em mais de 30 anos de exibição, a série já se envolveu em inúmeras polêmic
 
 Neste trabalho, será apresentada uma análise dos episódios das temporadas 21 a 26, exibidos entre os anos de 2010 a 2016, considerando dados de audiência, avaliação do público e caracaterísticas dos diálogos entre os personagens. Pretende-se avaliar as tendências de variação da audiência e da avaliação popular dos episódios ao longo do tempo, e também a existência de correlações entre essas duas variáveis. Serão verificadas, também, tendências de variação no volume de palavras faladas pelos personagens, possíveis correlações entre este volume e a avaliação popular, além de diferenças relacionadas ao gênero dos personagens.
 
+A análise das avaliações do público será feita com base nas notas dadas aos episódios pelos usuários do [IMDb](http://www.imdb.com), um popular site de informações sobre produções audiovisuais, em que os usuários podem dar notas de 1 a 10 aos programas.
+
 # 2. Materiais e Métodos
 
 ## Conjunto de Dados
@@ -74,7 +76,7 @@ simpsons_locations <- tuesdata$simpsons_locations
 simpsons_script_lines <- tuesdata$simpsons_script_lines
 ```
 
-O conjunto é composto por 4 arquivos de valores separados por vírgulas:
+<br>O conjunto é composto por 4 arquivos de valores separados por vírgulas:<br>
 
 | Arquivo | Tamanho | Descrição |
 |------------------------|------------------------|------------------------|
@@ -83,7 +85,7 @@ O conjunto é composto por 4 arquivos de valores separados por vírgulas:
 | simpsons_locations.csv | 174 kb | Nomes dos locais exibidos nos episódios |
 | simpsons_script_lines.csv | 6.88 Mb | Linhas de falas dos personagens por episódio |
 
-As estruturas completas das tabelas de dados são mostradas a seguir:
+<br>As estruturas completas das tabelas de dados são mostradas a seguir:<br>
 
 ```{r, echo=FALSE}
 #| label: tbl-personagens
@@ -198,38 +200,33 @@ frases_com_personagem <- script %>%
 
 ```
 
-```{r}
-library(tidyverse)
-tabela_generos <- simpsons_characters %>%
-  filter(gender != 'NA') %>%
-  mutate(
-    gender = if_else(gender == 'f', 'Feminino', 'Masculino')
-  ) %>%
-  group_by(gender) %>%
-  summarise("total" = n())
-tabela_generos
-```
+Estes são os passos básicos de tratamento, utilizados para limpar e preparar todo o conjunto de dados para análise. Gráficos e tabelas construídas podem utilizar passos adicionais específicos para selecionar, filtrar e resumir os dados de forma apropriada à visualização desejada.
 
 # 3. Resultados e Discussão
 
-```{r}
-#| label: fig-audiencia-temporada
-#| fig-cap: "Audiência média por temporada"
+## Audiência e Avaliações IMDb
 
+A primeira análise realizada considerou a audiência dos episódios medida nos Estados Unidos. Os dados foram agrupados por temporada e a audiência média é exibida a seguir:
 
+```{r, echo=FALSE}
+#| label: fig-views-season
+#| fig-cap: "Variação da audiência por temporada"
+#| fig-align: center
+#| fig-prefix: "Gráfico"
 
 views_by_season <- episodes_clean %>%
   group_by(season) %>%
   summarise(
-    total_viewers = sum(us_viewers_in_millions, na.rm = TRUE),
     mean_viewers = mean(us_viewers_in_millions, na.rm = TRUE),
     n = n()
   )
-views_by_season
 
 ggplot(views_by_season, aes(season, mean_viewers)) +
   geom_line() +
   geom_point() +
+  geom_text(
+    aes(label = round(mean_viewers,2), vjust = -0.7) 
+  ) +
   labs(
     title = "Audiência média por temporada",
     x = "Temporada",
@@ -238,7 +235,49 @@ ggplot(views_by_season, aes(season, mean_viewers)) +
   theme_minimal()
 ```
 
-```{r}
+O gráfico mostra uma queda acentuada na média de espectadores por temporada desde a temporada 22, chegando a uma redução de cerca de 50%.
+
+A seguir, são exibidos os resultados obtidos para a análise das notas no IMDb.
+
+```{r, echo=FALSE}
+#| label: fig-boxplot-imdb
+#| fig-cap: "Boxplot: Notas IMDb por temporada"
+
+imdb_summary <- episodes_clean %>%
+  filter(season != 27 & season !=28) %>%
+  group_by(season) %>%
+  summarise(
+    n_episodios = n(),
+    media = mean(imdb_rating, na.rm = TRUE),
+    mediana = median(imdb_rating, na.rm = TRUE),
+    desvio = sd(imdb_rating, na.rm = TRUE),
+    minimo = min(imdb_rating, na.rm = TRUE),
+    maximo = max(imdb_rating, na.rm = TRUE)
+  ) %>%
+  arrange(media)
+
+ggplot(episodes_clean, aes(x = factor(season), y = imdb_rating)) +
+  geom_boxplot(outlier.color = "red", outlier.size = 2) +
+  stat_summary(
+    fun = mean, 
+    geom = "point", 
+    shape = 22, 
+    size = 2, 
+    fill = "red", 
+    color = "black" 
+  ) +
+  labs(
+    title = "Boxplot - Notas IMDB por temporada",
+    x = "Temporada",
+    y = "Nota IMDB"
+  ) +
+  theme_minimal() 
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+#| label: fig-views-nota
+#| fig-cap: "Correlação: Audiência x Notas IMDb"
+
 episodes_clean %>% 
   ggplot(aes(x = us_viewers_in_millions, y = imdb_rating)) +
   geom_point(alpha = 0.6) +
@@ -248,23 +287,38 @@ episodes_clean %>%
     x = "Audiência nos EUA (milhões)",
     y = "Nota no IMDb"
   )
-
-ggplot(episodes_clean, aes(x = us_viewers_in_millions, y = imdb_rating)) +
-  geom_point(alpha = 0.6) +
-  geom_smooth(method = "lm", se = TRUE) +
-  labs(
-    title = "Correlação entre audiência e nota no IMDB – The Simpsons",
-    x = "Audiência (milhões)",
-    y = "Nota no IMDB"
-  ) +
-  theme_minimal()
 ```
 
-```{r echo=FALSE}
-#| label: figura
-#| fig-cap: Nota IMDb x Palavras por episódio conforme gênero
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+#| label: fig-corr-temporada
+#| fig-cap: "Evolução da correlação de Pearson"
+corr_by_season_votes <- episodes_clean %>%
+  group_by(season) %>%
+  summarise(
+    n = n(),
+    corr = cor(us_viewers_in_millions, imdb_votes, use = "complete.obs", method = "pearson")
+  )
 
-# 1. Aplicar filtro de temporadas
+ggplot(corr_by_season_votes, aes(x = season, y = corr)) +
+  geom_line(linewidth = 1.1, color = "darkred") +
+  geom_point(size = 3, color = "darkred") +
+  labs(
+    title = "Correlação entre audiência e votos IMDb por temporada",
+    x = "Temporada",
+    y = "Correlação de Pearson"
+  ) +
+  theme_minimal() 
+```
+
+A análise das notas dadas aos episódios por temporada, mostrada no [Gráfico @fig-boxplot-imdb] acima mostrou haver pouca variação média das notas ao longo do tempo.
+
+## Diálogos dos Personagens
+
+```{r, echo=FALSE}
+#| label: fig-rating-genero
+#| fig-cap: "Dispersão: Notas IMDb x Falas por gênero"
+
+
 dados <- frases_com_personagem_completo %>%
   filter(season >= 21) %>%
   group_by(episode_id, imdb_rating, season, gender) %>%
@@ -303,46 +357,84 @@ grafico
 agora outro gráfico
 
 ```{r}
-# 3. e 4. Calcular o total de palavras e a proporção por Gênero e Temporada
-gender_proportion_over_time <- frases_com_personagem_completo %>%
-  group_by(season, gender) %>%
-  summarise(
-    total_words = sum(word_count, na.rm = TRUE),
-    .groups = 'drop_last' # Mantém agrupado por 'season' temporariamente
-  ) %>%
-  # Calcular a proporção dentro de cada temporada
-  mutate(
-    proportion = total_words / sum(total_words)
-  ) %>%
-  ungroup()
 
-# 5. Criar o gráfico de linha
-ggplot(gender_proportion_over_time, aes(x = season, y = proportion, color = gender, group = gender)) +
-  geom_area(alpha = 0.4, position = "stack") +
-  geom_line(linewidth = 1.2) +
-  geom_point(size = 3) +
-  scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
-  scale_x_continuous(breaks = seq(21, 26, by = 1)) +
-  scale_color_manual(
-    values = c("Feminino" = "#FF7F00", "Masculino" = "#1F78B4"),
-    labels = c("f" = "Feminino", "m" = "Masculino")
-  ) +
+frases_personagens <- script %>%
+  left_join(simpsons_characters, by = c("character_id" = "id")) %>%
+  filter(!is.na(spoken_words), spoken_words != "", !is.na(name)) %>%
+  mutate(spoken_norm = spoken_words %>%
+           str_to_lower() %>%
+           str_trim()) %>%
+  count(name, spoken_norm, sort = TRUE) %>%
+  group_by(name) %>%
+  slice_max(n, n = 3) %>%
+  ungroup() %>%
+  mutate(spoken_norm = fct_reorder(spoken_norm, n)) %>%
+  slice_max(n, n = 10)
+frases_personagens
+
+
+frases_personagens %>% 
+  knitr::kable(
+    format = "html",
+    col.names = c("Personagem", "Frase", "Repetições"),
+    align = c('l', 'l', 'l')
+  )
+```
+
+```{r, echo=FALSE}
+#| label: fig-falas-genero
+#| fig-cap: "Razão do volume de falas por gênero"
+
+frases_com_personagem_completo <- script %>%
+  left_join(simpsons_characters, by = c("character_id" = "id")) %>%
+  filter(!is.na(spoken_words), spoken_words != "", !is.na(gender)) %>%
+  mutate(gender = if_else(gender == "f", "Feminino","Masculino"))
+
+
+proporcao_genero <- frases_com_personagem_completo %>%
+  select(season,gender,word_count) %>%
+  group_by(season,gender) %>%
+  summarise(soma = sum(word_count, na.rm = TRUE),
+            .groups = 'drop')
+  
+prop_gen <- pivot_wider(proporcao_genero,
+              names_from = gender,
+              values_from = soma,
+              names_prefix = "soma") %>%
+mutate(proporcao = somaMasculino/somaFeminino)
+  
+
+plot_proporcao <- ggplot(prop_gen,
+                         aes(x = season, y = proporcao)) +
+  geom_line() +
+  geom_point() +
+  geom_text(aes(
+    label = round(proporcao,2),
+    vjust = -0.7)) +
+  scale_y_continuous(limits = c(2.5,3.6)) + 
   labs(
-    title = "Proporção de Palavras Faladas por Gênero (Temporadas 21-26)",
+    title = "Razão de Palavras Faladas",
+    subtitle = "Personagens Masculinos/Femininos",
+    
     x = "Temporada",
-    y = "Proporção de Palavras Faladas",
-    color = "Gênero",
+    y = "Razão"
   ) +
-  theme_minimal() +
+  theme_bw() +
   theme(
     plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
-    axis.title = element_text(size = 12),
-    legend.position = "bottom"
+    plot.subtitle = element_text(hjust = 0.5, size = 10, color = "gray50"),
+    
   )
+    
+plot_proporcao
 ```
 
 # 4. Conclusão
 
-As análises realizadas indicam que não há aparente correlação entre o número de espectadores dos episódios de Os Simpsons nos EUA e as notas de avaliação destes episódios no site [IMDb](http://www.imdb.com), conforme pode ser visto no GRÁFICO XXX. A análise dos coeficientes de correlação de Pearson ano a ano, mostrada no GRÁFICO XXX, confirma essa conclusão. Embora seja possível perceber um aumento relativo desta correlação ao longo do tempo, apenas em uma das temporadas o coeficiente de Pearson esteve acima de 0,5, o que de fato caracteriza não haver correlação entre as variáveis.
+Os Simpsons podem não ser mais o fenômeno que foram um dia na TV mundial, mas segue sendo um programa de grande relevância. O [Gráfico @fig-views-season] mostra isso, deixando clara a forte queda da audiência dos episódios, ao mesmo tempo em que mostra que ainda há uma audiência média de mais de 3 milhões de espectadores por episódio, apenas nos EUA.
 
-Por sua vez, no GRÁFICO XXX, observa-se que pode
+A queda na popularidade, porém, parece não afetar a admiração daqueles que permanecem fieis ao show. Isto pode ser observado no [Gráfico @fig-boxplot-imdb], que mostra a variação das avaliações dos episódios no site [IMDb](http://www.imdb.com), e no [Gráfico @fig-corr-temporada], onde é mostrada a evolução do coeficiente de correlação de Pearson entre as variáveis número de espectadores e avaliação dos episódios. O primeiro gráfico traz boxplots, mostrando pouca variação das notas dadas a Os Simpsons ao longo das temporadas. No segundo gráfico, embora seja possível perceber um aumento relativo da correlação entre a audiência e as notas dos episódios ao longo do tempo, apenas em uma das temporadas o coeficiente de Pearson esteve acima de 0,5, o que de fato caracteriza não haver correlação entre as variáveis.
+
+A análise dos diálogos dos personagens revela curiosidades interessantes. Os personagens de maior destaque, como seria esperado, são os membros da família, com amplo destaque para Homer Simpson. O patriarca teve, nos anos de 2010 a 2016, mais que o dobro de falas dos seus familiares, conforme visto no GRÁFICO XXX. Com relação aos outros membros da família, o GRÁFICO XXX exibe uma aparente tendência de aumento da participação da mãe, Marge Simpson, nos diálogos. Nota-se que, a partir da temporada 24, ela passa a ser a personagem com mais falas depois de Homer.
+
+A grande disparidade no volume de falas de Homer motivou a análise de uma possível influência do gênero dos personagens sobre as avaliações no IMDb. O GRÁFICO XXX, porém, não demontrou indícios dessa relação. Entretanto, outra informação extraída deste mesmo gráfico é que o volume de falas dos personagens do gênero masculino é bastante superior às do gênero feminino. Em praticamente todos os episódios, os homens ultrapassam 1000 palavras faladas, enquanto as mulheres raramente se aproximam desta marca. Esta diferença pode ser quantificada pelo GRÁFICO XXX, que mostra que a razão do volume de falas entre os gêneros ao longo das temporadas é de aproximadamente 3. Ou seja, os personagens masculinos têm cerca de 3 vezes mais participação nos episódios. Assim, conclui-se que Os Simpsons ainda é um importante sucesso de audiência, porém deixa a desejar em relação à representatividade dos personagens.
