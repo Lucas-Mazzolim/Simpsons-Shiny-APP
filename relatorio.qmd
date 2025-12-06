@@ -1,0 +1,348 @@
+---
+title: "Os Simpsons em Números"
+format: html
+editor: visual
+lang: pt
+toc: true
+fig-align: center
+fig-auto-id: true
+tbl-auto-id: true
+tbl-cap-location: bottom
+crossref:
+  fig-prefix: "Gráfico"
+  tbl-prefix: "Tabela"
+bibliography: referencia.bib
+csl: estilo_abnt.csl
+css: style.css
+---
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+library(tidytuesdayR)
+library(tidyverse)
+library(tidytext)
+
+tuesdata <- tidytuesdayR::tt_load('2025-02-04')
+
+simpsons_characters <- tuesdata$simpsons_characters
+simpsons_episodes <- tuesdata$simpsons_episodes
+simpsons_locations <- tuesdata$simpsons_locations
+simpsons_script_lines <- tuesdata$simpsons_script_lines
+
+episodes_clean <- simpsons_episodes %>% 
+  filter(!is.na(us_viewers_in_millions),
+         !is.na(imdb_rating)) #Limpeza da base de dados
+
+
+script <- simpsons_script_lines %>%
+  left_join(simpsons_episodes, 
+            by = c("episode_id" = "id"))
+
+frases_com_personagem <- script %>%
+  left_join(simpsons_characters, by = c("character_id" = "id")) %>%
+  filter(!is.na(spoken_words), spoken_words != "") %>%
+  count(name, spoken_words, sort = TRUE)
+
+frases_com_personagem_completo <- script %>%
+  left_join(simpsons_characters, by = c("character_id" = "id")) %>%
+  filter(!is.na(spoken_words), spoken_words != "", !is.na(gender)) %>%
+  mutate(gender = if_else(gender == "f", "Feminino","Masculino"))
+```
+
+# 1. Introdução
+
+Os Simpsons é a série animada há mais tempo no ar na TV dos Estados Unidos. Sua estreia aconteceu no ano de 1989 e permanece no ar até hoje. [@BritannicaSimpsons]
+
+Em mais de 30 anos de exibição, a série já se envolveu em inúmeras polêmicas, inclusive com o público brasileiro, graças a um episódio da 13ª temporada, que mostrava o Brasil como um lugar violento, onde as ruas eram infestadas de macacos e as pessoas se movimentavam dançando conga. [@CanaltechSimpsonsBrasil] Ao longo dos anos, a audiência do show diminuiu consideravelmente, mas a família Simpson ainda se mantém relevante, com episódios assistidos por milhões de pessoas, não apenas nos Estados Unidos, mas em todo o mundo. [@SchneiderSimpsons]
+
+Neste trabalho, será apresentada uma análise dos episódios das temporadas 21 a 26, exibidos entre os anos de 2010 a 2016, considerando dados de audiência, avaliação do público e caracaterísticas dos diálogos entre os personagens. Pretende-se avaliar as tendências de variação da audiência e da avaliação popular dos episódios ao longo do tempo, e também a existência de correlações entre essas duas variáveis. Serão verificadas, também, tendências de variação no volume de palavras faladas pelos personagens, possíveis correlações entre este volume e a avaliação popular, além de diferenças relacionadas ao gênero dos personagens.
+
+# 2. Materiais e Métodos
+
+## Conjunto de Dados
+
+O conjunto de dados foi obtido a partir do repositório GitHub do projeto Tidy Tuesday, que disponibiliza, semanalmente, conjuntos de dados para desafios e prática da comunidade de ciência de dados. Para a obtenção dos dados, utilizou-se o pacote *tidytuesdayR* através do RStudio. O código R para obtenção dos dados é mostrado a seguir:
+
+```{r, eval=FALSE}
+install.packages("tidytuesdayR")
+
+tuesdata <- tidytuesdayR::tt_load('2025-02-04')
+
+simpsons_characters <- tuesdata$simpsons_characters
+simpsons_episodes <- tuesdata$simpsons_episodes
+simpsons_locations <- tuesdata$simpsons_locations
+simpsons_script_lines <- tuesdata$simpsons_script_lines
+```
+
+O conjunto é composto por 4 arquivos de valores separados por vírgulas:
+
+| Arquivo | Tamanho | Descrição |
+|------------------------|------------------------|------------------------|
+| simpsons_characters.csv | 222 kb | Informações dos personagens: nome e gênero |
+| simpsons_episodes.csv | 30 kb | Informações sobre os episódios: título, ano de exibição, temporada, audiência nos EUA, avaliação do público; |
+| simpsons_locations.csv | 174 kb | Nomes dos locais exibidos nos episódios |
+| simpsons_script_lines.csv | 6.88 Mb | Linhas de falas dos personagens por episódio |
+
+As estruturas completas das tabelas de dados são mostradas a seguir:
+
+```{r, echo=FALSE}
+#| label: tbl-personagens
+#| tbl-cap: "Estrutura - Tabela Personagens"
+#| tbl-cap-location: top
+
+estrutura <- tibble(
+  Nome = names(simpsons_characters),
+  Tipo = sapply(simpsons_characters, class),
+  Exemplos = sapply(simpsons_characters, function(x) paste(head(x,3),collapse = ", "))
+)
+
+estrutura %>% 
+  knitr::kable(
+    format = "html",
+    col.names = c("Nome da Coluna", "Tipo", "Amostra"),
+    align = c('l', 'l', 'l')
+)
+
+```
+
+```{r, echo=FALSE}
+#| label: tbl-episodios
+#| tbl-cap: "Estrutura - Tabela Episódios"
+#| tbl-cap-location: top
+
+estrutura <- tibble(
+  Nome = names(simpsons_episodes),
+  Tipo = sapply(simpsons_episodes, class),
+  Exemplos = sapply(simpsons_episodes, function(x) paste(head(x,3),collapse = ", "))
+)
+
+estrutura %>% 
+  knitr::kable(
+    format = "html",
+    col.names = c("Nome da Coluna", "Tipo", "Amostra"),
+    align = c('l', 'l', 'l')
+)
+
+```
+
+```{r, echo=FALSE}
+#| label: tbl-locais
+#| tbl-cap: "Estrutura - Tabela Locais"
+#| tbl-cap-location: top
+
+estrutura <- tibble(
+  Nome = names(simpsons_locations),
+  Tipo = sapply(simpsons_locations, class),
+  Exemplos = sapply(simpsons_locations, function(x) paste(head(x,3),collapse = ", "))
+)
+
+estrutura %>% 
+  knitr::kable(
+    format = "html",
+    col.names = c("Nome da Coluna", "Tipo", "Amostra"),
+    align = c('l', 'l', 'l')
+)
+```
+
+```{r, echo=FALSE}
+#| label: tbl-dialogos
+#| tbl-cap: "Estrutura - Tabela Diálogos"
+#| tbl-cap-location: top
+
+estrutura <- tibble(
+  Nome = names(simpsons_script_lines),
+  Tipo = sapply(simpsons_script_lines, class),
+  Exemplos = sapply(simpsons_script_lines, function(x) paste(head(x,3),collapse = ", "))
+)
+
+estrutura %>% 
+  knitr::kable(
+    format = "html",
+    col.names = c("Nome da Coluna", "Tipo", "Amostra"),
+    align = c('l', 'l', 'l')
+)
+
+```
+
+## Preparação dos Dados
+
+Inicialmente, para viabilizar as análises de audiência dos episódios, a tabela `simpsons_episodes` foi filtrada para remoção de observações NA das variáveis de audiência e avaliação IMDb, identificadas como `us_viewers_in_millions` e `imdb_rating`. Também foram excluídas as colunas `image_url e video_url`, que não teriam aplicabilidade para as análises desejadas. O preparo da tabela foi realizado utilizando o código a seguir:
+
+```{r, eval=FALSE}
+
+episodes_clean <- simpsons_episodes %>% 
+  filter(!is.na(us_viewers_in_millions),
+         !is.na(imdb_rating)) %>%
+  select(-c(image_url,video_url))
+
+```
+
+Para trabalhar com os diálogos dos personagens, foram unidas as tabelas de episódios, `simpsons_episodes` e de diálogos, `simpsons_script_lines`:
+
+```{r, eval=FALSE}
+
+script <- simpsons_script_lines %>%
+  left_join(simpsons_episodes %>% select(id, season), 
+            by = c("episode_id" = "id"))
+
+```
+
+E finalmente, eliminaram-se as linhas da tabela que não correspondiam a diálogos, onde a coluna `spoken_words`encontrava-se vazia ou com valor NA.
+
+```{r eval=FALSE}
+
+frases_com_personagem <- script %>%
+  left_join(simpsons_characters, by = c("character_id" = "id")) %>%
+  filter(!is.na(spoken_words), spoken_words != "") %>%
+  count(name, spoken_words, sort = TRUE)
+
+```
+
+```{r}
+library(tidyverse)
+tabela_generos <- simpsons_characters %>%
+  filter(gender != 'NA') %>%
+  mutate(
+    gender = if_else(gender == 'f', 'Feminino', 'Masculino')
+  ) %>%
+  group_by(gender) %>%
+  summarise("total" = n())
+tabela_generos
+```
+
+# 3. Resultados e Discussão
+
+```{r}
+#| label: fig-audiencia-temporada
+#| fig-cap: "Audiência média por temporada"
+
+
+
+views_by_season <- episodes_clean %>%
+  group_by(season) %>%
+  summarise(
+    total_viewers = sum(us_viewers_in_millions, na.rm = TRUE),
+    mean_viewers = mean(us_viewers_in_millions, na.rm = TRUE),
+    n = n()
+  )
+views_by_season
+
+ggplot(views_by_season, aes(season, mean_viewers)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Audiência média por temporada",
+    x = "Temporada",
+    y = "Audiência média (milhões)"
+  ) +
+  theme_minimal()
+```
+
+```{r}
+episodes_clean %>% 
+  ggplot(aes(x = us_viewers_in_millions, y = imdb_rating)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Audiência vs IMDb Rating — The Simpsons",
+    x = "Audiência nos EUA (milhões)",
+    y = "Nota no IMDb"
+  )
+
+ggplot(episodes_clean, aes(x = us_viewers_in_millions, y = imdb_rating)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(
+    title = "Correlação entre audiência e nota no IMDB – The Simpsons",
+    x = "Audiência (milhões)",
+    y = "Nota no IMDB"
+  ) +
+  theme_minimal()
+```
+
+```{r echo=FALSE}
+#| label: figura
+#| fig-cap: Nota IMDb x Palavras por episódio conforme gênero
+
+# 1. Aplicar filtro de temporadas
+dados <- frases_com_personagem_completo %>%
+  filter(season >= 21) %>%
+  group_by(episode_id, imdb_rating, season, gender) %>%
+  summarise(
+    total_words_in_episode = sum(word_count, na.rm = TRUE),
+    .groups = 'drop'
+  )
+palavras_personagem_por_episodio <- dados %>%
+filter(!is.na(imdb_rating), !is.na(gender), gender %in% c("Feminino", "Masculino"))
+plot_data <- palavras_personagem_por_episodio
+grafico <- ggplot(plot_data, aes(x = total_words_in_episode, y = imdb_rating)) +
+      geom_point(alpha = 0.5, colour = "#605F57") + 
+      facet_wrap(~ gender) + 
+      scale_x_continuous(trans = "log10") + 
+      labs(
+        title = "Volume de Palavras x Avaliação IMDb",
+        subtitle = "Avaliação por gênero dos personagens",
+        x = "Total de Palavras do Personagem no Episódio",
+        y = "Avaliação IMDb do Episódio"
+      ) +
+      theme_bw() +
+      theme(
+        axis.text = element_text(size = 11),
+        axis.title = element_text(face = "bold"),
+        plot.background = element_rect(colour = "#605F57"),
+        plot.margin = margin(5,8,5,8),
+        plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+        plot.subtitle = element_text(size = 11, hjust = 0.5),
+        strip.text = element_text(face = "bold", size = 12),
+        strip.background = element_rect(fill = '#605F57', colour = '#605F57'),
+        legend.position = "bottom"
+      )
+grafico
+```
+
+agora outro gráfico
+
+```{r}
+# 3. e 4. Calcular o total de palavras e a proporção por Gênero e Temporada
+gender_proportion_over_time <- frases_com_personagem_completo %>%
+  group_by(season, gender) %>%
+  summarise(
+    total_words = sum(word_count, na.rm = TRUE),
+    .groups = 'drop_last' # Mantém agrupado por 'season' temporariamente
+  ) %>%
+  # Calcular a proporção dentro de cada temporada
+  mutate(
+    proportion = total_words / sum(total_words)
+  ) %>%
+  ungroup()
+
+# 5. Criar o gráfico de linha
+ggplot(gender_proportion_over_time, aes(x = season, y = proportion, color = gender, group = gender)) +
+  geom_area(alpha = 0.4, position = "stack") +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
+  scale_x_continuous(breaks = seq(21, 26, by = 1)) +
+  scale_color_manual(
+    values = c("Feminino" = "#FF7F00", "Masculino" = "#1F78B4"),
+    labels = c("f" = "Feminino", "m" = "Masculino")
+  ) +
+  labs(
+    title = "Proporção de Palavras Faladas por Gênero (Temporadas 21-26)",
+    x = "Temporada",
+    y = "Proporção de Palavras Faladas",
+    color = "Gênero",
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+    axis.title = element_text(size = 12),
+    legend.position = "bottom"
+  )
+```
+
+# 4. Conclusão
+
+As análises realizadas indicam que não há aparente correlação entre o número de espectadores dos episódios de Os Simpsons nos EUA e as notas de avaliação destes episódios no site [IMDb](http://www.imdb.com), conforme pode ser visto no GRÁFICO XXX. A análise dos coeficientes de correlação de Pearson ano a ano, mostrada no GRÁFICO XXX, confirma essa conclusão. Embora seja possível perceber um aumento relativo desta correlação ao longo do tempo, apenas em uma das temporadas o coeficiente de Pearson esteve acima de 0,5, o que de fato caracteriza não haver correlação entre as variáveis.
+
+Por sua vez, no GRÁFICO XXX, observa-se que pode
