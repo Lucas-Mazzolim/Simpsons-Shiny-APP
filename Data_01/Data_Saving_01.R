@@ -16,6 +16,7 @@ write_csv(simpsons_script_lines, './Data_01/script_lines.csv')
 # Salvando dados em tabela central
 
 tabela_mestre = simpsons_script_lines |>
+  filter(!is.na(raw_character_text), raw_character_text != "") |>
   left_join(simpsons_episodes,by = c('episode_id' = 'id')
   ) |>
   left_join(simpsons_characters,by = c('character_id' = 'id')

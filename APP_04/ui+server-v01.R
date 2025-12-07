@@ -5,10 +5,13 @@ library(wordcloud)
 library(RColorBrewer)
 library(plotly)
 
+getwd()
+setwd('C:/Users/Eri/Documents/Simpsons-Shiny-APP/')
+
 dados <- read_csv("./Data_01/tabela_mestre_final.csv")
 
 # dropdown com top 50
-top_personagens <- dados |>
+top_personagens_lista <- dados |>
   filter(!is.na(raw_character_text)) |> #null's
   count(raw_character_text, sort = TRUE) |>
   slice_head(n = 50) |>
