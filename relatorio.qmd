@@ -8,6 +8,7 @@ fig-align: center
 fig-auto-id: true
 tbl-auto-id: true
 tbl-cap-location: bottom
+fig-prefix: "Gráfico"
 crossref:
   fig-prefix: "Gráfico"
   tbl-prefix: "Tabela"
@@ -310,9 +311,136 @@ ggplot(corr_by_season_votes, aes(x = season, y = corr)) +
   theme_minimal() 
 ```
 
-A análise das notas dadas aos episódios por temporada, mostrada no [Gráfico @fig-boxplot-imdb] acima mostrou haver pouca variação média das notas ao longo do tempo.
+A análise das notas dadas aos episódios por temporada, mostrada no [Gráfico @fig-boxplot-imdb] acima mostrou haver pouca variação média das notas ao longo do tempo. Considerando este dado em conjunto com a queda de audiência vista anteriormente, analisou-se a existência de correlação entre as variáveis de audiência e notas, tanto visualmente quanto através do coeficiente de correlação de Pearson. O [Gráfico @fig-views-nota] mostra de forma visual que não parece haver correlação significativa entre as variáveis. O que é confirmado pelos coeficientes de Pearson calculados para cada temporada, vistos no [Gráfico @fig-corr-temporada].
 
 ## Diálogos dos Personagens
+
+<p>A análise dos diálogos fixou-se, principalmente, na quantidade de palavras ou frases faladas pelos personagens. Inicialmente, uma análise do número de falas dos personagens resultou no gráfico seguinte.</p>
+
+```{r, echo=FALSE}
+#| label: fig-mais-falam
+#| fig-cap: "Personagens que mais falam"
+
+### PERSONAGENS QUE MAIS FALAM
+top_speakers <- script %>%
+  filter(speaking_line == TRUE, !is.na(character_id)) %>%
+  group_by(raw_character_text) %>%
+  summarise(
+    n_lines = n(),
+    total_words = sum(word_count, na.rm = TRUE)
+  ) %>%
+  arrange(desc(n_lines)) %>%
+  slice_head(n = 10)
+
+
+ggplot(top_speakers, aes(x = reorder(raw_character_text, n_lines), y = n_lines)) +
+  geom_col(fill = "gold") +
+  geom_text(aes(label = n_lines)) +
+  coord_flip() +
+  labs(
+    title = "Personagens com mais falas (2010–2016)",
+    x = "Personagem",
+    y = "Número de falas"
+  ) +
+  theme_minimal()
+```
+
+<p>
+
+O número total de falas entre 2010 e 2016 coloca Homer Simpson como o personagem mais falante, seguido dos outros membros da família, com uma larga diferença para os demais personagens.
+
+Em seguida, procurou-se avaliar não apenas a quantidade, mas também o conteúdo das falas. Os resultados obtidos são os que seguem.
+
+</p>
+
+```{r, echo=FALSE}
+#| label: fig-tamanho-falas
+#| fig-cap: "Personagens conforme média de palavras por fala"
+
+
+### TAMANHO DAS FALAS POR PERSONAGEM
+avg_words <- script %>%
+  filter(speaking_line == TRUE) %>%
+  group_by(raw_character_text) %>%
+  summarise(
+    mean_words = mean(word_count, na.rm = TRUE),
+    n_lines = n()
+  ) %>%
+  filter(n_lines > 100) %>%
+  arrange(desc(mean_words)) %>%
+  slice_head(n = 10)
+
+ggplot(avg_words, aes(x = reorder(raw_character_text, mean_words), y = mean_words)) +
+  geom_col(fill = "steelblue") +
+  geom_text(aes(label = round(mean_words,2)), hjust = -0.05) +
+  coord_flip() +
+  scale_y_continuous(limits = c(0,20)) +
+  labs(
+    title = "Tamanho médio das falas por personagem - Top 10",
+    x = "Personagem",
+    y = "Palavras por fala"
+  ) +
+  theme_minimal()
+```
+
+```{r, echo=FALSE}
+#| label: tbl-frases
+#| tbl-cap: "Expressões mais repetidas"
+#| tbl-colwidths: [20,20,60]
+
+
+frases_personagens <- script %>%
+  left_join(simpsons_characters, by = c("character_id" = "id")) %>%
+  filter(!is.na(spoken_words), spoken_words != "", !is.na(name)) %>%
+  mutate(spoken_norm = spoken_words %>%
+           str_to_lower() %>%
+           str_trim()) %>%
+  count(name, spoken_norm, sort = TRUE) %>%
+  group_by(name) %>%
+  slice_max(n, n = 3) %>%
+  ungroup() %>%
+  mutate(spoken_norm = fct_reorder(spoken_norm, n)) %>%
+  slice_max(n, n = 10)
+
+frases_personagens %>% 
+  knitr::kable(
+    format = "html",
+    col.names = c("Personagem", "Frase", "Repetições"),
+    align = c('l', 'l', 'l')
+  )
+```
+
+<p>Através do [Gráfico @fig-tamanho-falas], nota-se que, embora os personagens principais da família tenham um volume de falas bastante superior aos demais, nenhum deles aparece entre aqueles com as falas mais longas. Um indicativo da explicação para isso pode ser visto na [Tabela @tbl-frases], que mostra as expressões mais faladas pelos personagens, e onde é possível ver que algumas das frases mais repetidas pela família Simpson são interjeições e exclamações curtas.</p>
+
+<p>Na sequência das análises, avaliou-se a variação entre as temporadas do volume de falas dos personagens, focando apenas nos membros da família. A partir desta análise, decidiu-se investigar uma possível influência dos volumes de falas sobre as notas do IMDb vistas anteriormente. Os resultados são mostrados nos gráficos a seguir.</p>
+
+```{r, echo=FALSE}
+#| label: fig-evol-falas
+#| fig-cap: "Evolução do volume de falas"
+
+
+### EVOLUÇÃO DAS FALAS POR TEMPORADA
+trend <- script %>%
+  filter(grepl("Simpson", raw_character_text), speaking_line == TRUE) %>%
+  group_by(season, raw_character_text) %>%
+  summarise(n_lines = n(), .groups = "drop") %>%
+  group_by(raw_character_text) %>%
+  filter(sum(n_lines) > 150)
+
+
+ggplot(trend, aes(x = season, y = n_lines, color = raw_character_text)) +
+  geom_line(linewidth = 1) +
+  geom_point() +
+  labs(
+    title = "Evolução das falas por temporada",
+    x = "Temporada",
+    y = "Número de falas"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.title = element_blank()
+  )
+```
 
 ```{r, echo=FALSE}
 #| label: fig-rating-genero
@@ -352,33 +480,6 @@ grafico <- ggplot(plot_data, aes(x = total_words_in_episode, y = imdb_rating)) +
         legend.position = "bottom"
       )
 grafico
-```
-
-agora outro gráfico
-
-```{r}
-
-frases_personagens <- script %>%
-  left_join(simpsons_characters, by = c("character_id" = "id")) %>%
-  filter(!is.na(spoken_words), spoken_words != "", !is.na(name)) %>%
-  mutate(spoken_norm = spoken_words %>%
-           str_to_lower() %>%
-           str_trim()) %>%
-  count(name, spoken_norm, sort = TRUE) %>%
-  group_by(name) %>%
-  slice_max(n, n = 3) %>%
-  ungroup() %>%
-  mutate(spoken_norm = fct_reorder(spoken_norm, n)) %>%
-  slice_max(n, n = 10)
-frases_personagens
-
-
-frases_personagens %>% 
-  knitr::kable(
-    format = "html",
-    col.names = c("Personagem", "Frase", "Repetições"),
-    align = c('l', 'l', 'l')
-  )
 ```
 
 ```{r, echo=FALSE}
@@ -421,6 +522,7 @@ plot_proporcao <- ggplot(prop_gen,
   ) +
   theme_bw() +
   theme(
+    plot.background = element_rect(colour = "gray50"),
     plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
     plot.subtitle = element_text(hjust = 0.5, size = 10, color = "gray50"),
     
@@ -429,12 +531,16 @@ plot_proporcao <- ggplot(prop_gen,
 plot_proporcao
 ```
 
+No [Gráfico @fig-evol-falas] acima, observa-se que, além de ter o maior volume de falas, como já é conhecido, Homer Simpson apresentou, ainda, uma forte tendência de elevação deste volume entre as temporadas 21 a 24. A mesma tendência pode ser observada para a mãe da família, Marge. Com isso, ela assume, nas últimas temporadas, a segunda posição entre os personagens mais falantes.
+
+Baseado nesta informação, avaliou-se a influência do volume de falas sobre as notas dadas no IMDb, levando em conta a divisão dos personagens por gênero. Conforme se observa no [Gráfico @fig-rating-genero], não há indícios da correlação entre as variáveis. No mesmo gráfico, porém, é possível perceber que o volume de palavras dos personagens masculinos é bastante superior ao feminino, o que é confirmado como uma característica constante ao longo das temporadas através do [Gráfico @fig-falas-genero], que mostra uma proporção cerca de 3 vezes maior de falas para oos personagens masculinos.
+
 # 4. Conclusão
 
 Os Simpsons podem não ser mais o fenômeno que foram um dia na TV mundial, mas segue sendo um programa de grande relevância. O [Gráfico @fig-views-season] mostra isso, deixando clara a forte queda da audiência dos episódios, ao mesmo tempo em que mostra que ainda há uma audiência média de mais de 3 milhões de espectadores por episódio, apenas nos EUA.
 
 A queda na popularidade, porém, parece não afetar a admiração daqueles que permanecem fieis ao show. Isto pode ser observado no [Gráfico @fig-boxplot-imdb], que mostra a variação das avaliações dos episódios no site [IMDb](http://www.imdb.com), e no [Gráfico @fig-corr-temporada], onde é mostrada a evolução do coeficiente de correlação de Pearson entre as variáveis número de espectadores e avaliação dos episódios. O primeiro gráfico traz boxplots, mostrando pouca variação das notas dadas a Os Simpsons ao longo das temporadas. No segundo gráfico, embora seja possível perceber um aumento relativo da correlação entre a audiência e as notas dos episódios ao longo do tempo, apenas em uma das temporadas o coeficiente de Pearson esteve acima de 0,5, o que de fato caracteriza não haver correlação entre as variáveis.
 
-A análise dos diálogos dos personagens revela curiosidades interessantes. Os personagens de maior destaque, como seria esperado, são os membros da família, com amplo destaque para Homer Simpson. O patriarca teve, nos anos de 2010 a 2016, mais que o dobro de falas dos seus familiares, conforme visto no GRÁFICO XXX. Com relação aos outros membros da família, o GRÁFICO XXX exibe uma aparente tendência de aumento da participação da mãe, Marge Simpson, nos diálogos. Nota-se que, a partir da temporada 24, ela passa a ser a personagem com mais falas depois de Homer.
+A análise dos diálogos dos personagens revela curiosidades interessantes. Os personagens de maior destaque, como seria esperado, são os membros da família, com amplo destaque para Homer Simpson. O patriarca teve, nos anos de 2010 a 2016, mais que o dobro de falas dos seus familiares, conforme visto no [Gráfico @fig-mais-falam]. Com relação aos outros membros da família, o [Gráfico @fig-evol-falas] exibe uma aparente tendência de aumento da participação da mãe, Marge Simpson, nos diálogos. Nota-se que, a partir da temporada 24, ela passa a ser a personagem com mais falas depois de Homer.
 
-A grande disparidade no volume de falas de Homer motivou a análise de uma possível influência do gênero dos personagens sobre as avaliações no IMDb. O GRÁFICO XXX, porém, não demontrou indícios dessa relação. Entretanto, outra informação extraída deste mesmo gráfico é que o volume de falas dos personagens do gênero masculino é bastante superior às do gênero feminino. Em praticamente todos os episódios, os homens ultrapassam 1000 palavras faladas, enquanto as mulheres raramente se aproximam desta marca. Esta diferença pode ser quantificada pelo GRÁFICO XXX, que mostra que a razão do volume de falas entre os gêneros ao longo das temporadas é de aproximadamente 3. Ou seja, os personagens masculinos têm cerca de 3 vezes mais participação nos episódios. Assim, conclui-se que Os Simpsons ainda é um importante sucesso de audiência, porém deixa a desejar em relação à representatividade dos personagens.
+A grande disparidade no volume de falas de Homer motivou a análise de uma possível influência do gênero dos personagens sobre as avaliações no IMDb. O [Gráfico @fig-rating-genero], porém, não demontrou indícios dessa relação. Entretanto, outra informação extraída deste mesmo gráfico é que o volume de falas dos personagens do gênero masculino é bastante superior às do gênero feminino. Em praticamente todos os episódios, os homens ultrapassam 1000 palavras faladas, enquanto as mulheres raramente se aproximam desta marca. Esta diferença pode ser quantificada pelo [Gráfico @fig-falas-genero], que mostra que a razão do volume de falas entre os gêneros ao longo das temporadas é de aproximadamente 3. Ou seja, os personagens masculinos têm cerca de 3 vezes mais participação nos episódios. Assim, conclui-se que Os Simpsons ainda é um importante sucesso de audiência, porém deixa a desejar em relação à representatividade dos personagens.
