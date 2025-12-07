@@ -8,13 +8,12 @@ fig-align: center
 fig-auto-id: true
 tbl-auto-id: true
 tbl-cap-location: bottom
-fig-prefix: "Gráfico"
-crossref:
-  fig-prefix: "Gráfico"
-  tbl-prefix: "Tabela"
 bibliography: referencia.bib
 csl: estilo_abnt.csl
 css: style.css
+crossref: 
+  fig-prefix: "Gráfico"
+  fig-title: "Gráfico"
 ---
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
@@ -56,7 +55,7 @@ Os Simpsons é a série animada há mais tempo no ar na TV dos Estados Unidos. S
 
 Em mais de 30 anos de exibição, a série já se envolveu em inúmeras polêmicas, inclusive com o público brasileiro, graças a um episódio da 13ª temporada, que mostrava o Brasil como um lugar violento, onde as ruas eram infestadas de macacos e as pessoas se movimentavam dançando conga. [@CanaltechSimpsonsBrasil] Ao longo dos anos, a audiência do show diminuiu consideravelmente, mas a família Simpson ainda se mantém relevante, com episódios assistidos por milhões de pessoas, não apenas nos Estados Unidos, mas em todo o mundo. [@SchneiderSimpsons]
 
-Neste trabalho, será apresentada uma análise dos episódios das temporadas 21 a 26, exibidos entre os anos de 2010 a 2016, considerando dados de audiência, avaliação do público e caracaterísticas dos diálogos entre os personagens. Pretende-se avaliar as tendências de variação da audiência e da avaliação popular dos episódios ao longo do tempo, e também a existência de correlações entre essas duas variáveis. Serão verificadas, também, tendências de variação no volume de palavras faladas pelos personagens, possíveis correlações entre este volume e a avaliação popular, além de diferenças relacionadas ao gênero dos personagens.
+Neste trabalho, será apresentada uma análise dos episódios das temporadas 21 a 28, exibidos entre os anos de 2010 a 2016, considerando dados de audiência, avaliação do público e caracaterísticas dos diálogos entre os personagens. Pretende-se avaliar as tendências de variação da audiência e da avaliação popular dos episódios ao longo do tempo, e também a existência de correlações entre essas duas variáveis. Serão verificadas, também, tendências de variação no volume de palavras faladas pelos personagens, possíveis correlações entre este volume e a avaliação popular, além de diferenças relacionadas ao gênero dos personagens.
 
 A análise das avaliações do público será feita com base nas notas dadas aos episódios pelos usuários do [IMDb](http://www.imdb.com), um popular site de informações sobre produções audiovisuais, em que os usuários podem dar notas de 1 a 10 aos programas.
 
@@ -86,7 +85,7 @@ simpsons_script_lines <- tuesdata$simpsons_script_lines
 | simpsons_locations.csv | 174 kb | Nomes dos locais exibidos nos episódios |
 | simpsons_script_lines.csv | 6.88 Mb | Linhas de falas dos personagens por episódio |
 
-<br>As estruturas completas das tabelas de dados são mostradas a seguir:<br>
+<br>As estruturas completas das tabelas de dados são mostradas a seguir:<br><br>
 
 ```{r, echo=FALSE}
 #| label: tbl-personagens
@@ -152,6 +151,7 @@ estrutura %>%
 #| tbl-cap: "Estrutura - Tabela Diálogos"
 #| tbl-cap-location: top
 
+
 estrutura <- tibble(
   Nome = names(simpsons_script_lines),
   Tipo = sapply(simpsons_script_lines, class),
@@ -207,13 +207,12 @@ Estes são os passos básicos de tratamento, utilizados para limpar e preparar t
 
 ## Audiência e Avaliações IMDb
 
-A primeira análise realizada considerou a audiência dos episódios medida nos Estados Unidos. Os dados foram agrupados por temporada e a audiência média é exibida a seguir:
+A primeira análise realizada considerou a audiência dos episódios medida nos Estados Unidos. Os dados foram agrupados por temporada e a audiência média é exibida a seguir:<br><br>
 
 ```{r, echo=FALSE}
 #| label: fig-views-season
 #| fig-cap: "Variação da audiência por temporada"
 #| fig-align: center
-#| fig-prefix: "Gráfico"
 
 views_by_season <- episodes_clean %>%
   group_by(season) %>%
@@ -228,21 +227,33 @@ ggplot(views_by_season, aes(season, mean_viewers)) +
   geom_text(
     aes(label = round(mean_viewers,2), vjust = -0.7) 
   ) +
+  scale_y_continuous(limits = c(3,8)) +
   labs(
-    title = "Audiência média por temporada",
+    title = "Audiência Média por Temporada",
     x = "Temporada",
-    y = "Audiência média (milhões)"
+    y = "Audiência média (milhões de espectadores)"
   ) +
-  theme_minimal()
+  theme_bw() +
+  theme(
+    plot.background = element_rect(colour = "#282A28"),
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 12, color = "#282A28"),
+    axis.text = element_text(size = 11),
+    axis.title = element_text(face = "bold"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    plot.margin = margin(8,12,8,12)
+  )
 ```
 
 O gráfico mostra uma queda acentuada na média de espectadores por temporada desde a temporada 22, chegando a uma redução de cerca de 50%.
 
-A seguir, são exibidos os resultados obtidos para a análise das notas no IMDb.
+A seguir, são exibidos os resultados obtidos para a análise das notas no IMDb.<br><br>
 
 ```{r, echo=FALSE}
 #| label: fig-boxplot-imdb
 #| fig-cap: "Boxplot: Notas IMDb por temporada"
+#| fig-align: center
 
 imdb_summary <- episodes_clean %>%
   filter(season != 27 & season !=28) %>%
@@ -264,35 +275,66 @@ ggplot(episodes_clean, aes(x = factor(season), y = imdb_rating)) +
     geom = "point", 
     shape = 22, 
     size = 2, 
-    fill = "red", 
+    fill = "#EB8495", 
     color = "black" 
+  ) +
+  stat_summary(
+    fun = mean, 
+    geom = "text",
+    aes(label = round(after_stat(y),1)),
+    vjust = 0.6,
+    color = "gray20" 
   ) +
   labs(
     title = "Boxplot - Notas IMDB por temporada",
     x = "Temporada",
     y = "Nota IMDB"
   ) +
-  theme_minimal() 
+  theme_bw() +
+  theme(
+    plot.background = element_rect(colour = "#282A28"),
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 12, color = "#282A28"),
+    axis.text = element_text(size = 11),
+    axis.title = element_text(face = "bold"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    plot.margin = margin(8,12,8,12)
+  )
 ```
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 #| label: fig-views-nota
 #| fig-cap: "Correlação: Audiência x Notas IMDb"
+#| fig-align: center
 
 episodes_clean %>% 
   ggplot(aes(x = us_viewers_in_millions, y = imdb_rating)) +
   geom_point(alpha = 0.6) +
-  geom_smooth(method = "lm", se = FALSE) +
+  geom_smooth(method = "lm", se = FALSE, linewidth = 0.5, linetype = "dashed") +
   labs(
     title = "Audiência vs IMDb Rating — The Simpsons",
     x = "Audiência nos EUA (milhões)",
     y = "Nota no IMDb"
+  ) +
+  theme_bw() +
+  theme(
+    plot.background = element_rect(colour = "#282A28"),
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 12, color = "#282A28"),
+    axis.text = element_text(size = 11),
+    axis.title = element_text(face = "bold"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    plot.margin = margin(8,12,8,12)
   )
 ```
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 #| label: fig-corr-temporada
 #| fig-cap: "Evolução da correlação de Pearson"
+#| fig-align: center
+
 corr_by_season_votes <- episodes_clean %>%
   group_by(season) %>%
   summarise(
@@ -301,25 +343,36 @@ corr_by_season_votes <- episodes_clean %>%
   )
 
 ggplot(corr_by_season_votes, aes(x = season, y = corr)) +
-  geom_line(linewidth = 1.1, color = "darkred") +
-  geom_point(size = 3, color = "darkred") +
+  geom_line(linewidth = 0.65, color = "darkred") +
+  geom_point(size = 2, shape = 21, color = "#333234", fill = "#EB8495") +
   labs(
-    title = "Correlação entre audiência e votos IMDb por temporada",
+    title = "Correlação entre audiência e notas IMDb por temporada",
     x = "Temporada",
     y = "Correlação de Pearson"
   ) +
-  theme_minimal() 
+  theme_bw() +
+  theme(
+    plot.background = element_rect(colour = "#282A28"),
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 12, color = "#282A28"),
+    axis.text = element_text(size = 11),
+    axis.title = element_text(face = "bold"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    plot.margin = margin(8,12,8,12)
+  )
 ```
 
 A análise das notas dadas aos episódios por temporada, mostrada no [Gráfico @fig-boxplot-imdb] acima mostrou haver pouca variação média das notas ao longo do tempo. Considerando este dado em conjunto com a queda de audiência vista anteriormente, analisou-se a existência de correlação entre as variáveis de audiência e notas, tanto visualmente quanto através do coeficiente de correlação de Pearson. O [Gráfico @fig-views-nota] mostra de forma visual que não parece haver correlação significativa entre as variáveis. O que é confirmado pelos coeficientes de Pearson calculados para cada temporada, vistos no [Gráfico @fig-corr-temporada].
 
 ## Diálogos dos Personagens
 
-<p>A análise dos diálogos fixou-se, principalmente, na quantidade de palavras ou frases faladas pelos personagens. Inicialmente, uma análise do número de falas dos personagens resultou no gráfico seguinte.</p>
+<p>A análise dos diálogos fixou-se, principalmente, na quantidade de palavras ou frases faladas pelos personagens. Inicialmente, uma análise do número de falas dos personagens resultou no gráfico seguinte.</p><br>
 
 ```{r, echo=FALSE}
 #| label: fig-mais-falam
 #| fig-cap: "Personagens que mais falam"
+#| fig-align: center
 
 ### PERSONAGENS QUE MAIS FALAM
 top_speakers <- script %>%
@@ -342,7 +395,18 @@ ggplot(top_speakers, aes(x = reorder(raw_character_text, n_lines), y = n_lines))
     x = "Personagem",
     y = "Número de falas"
   ) +
-  theme_minimal()
+  theme_bw() +
+  theme(
+    plot.background = element_rect(colour = "#282A28"),
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 12, color = "#282A28"),
+    axis.text = element_text(size = 11),
+    axis.title = element_text(face = "bold"),
+    axis.title.y = element_blank(),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    plot.margin = margin(8,12,8,12)
+  )
 ```
 
 <p>
@@ -356,6 +420,7 @@ Em seguida, procurou-se avaliar não apenas a quantidade, mas também o conteúd
 ```{r, echo=FALSE}
 #| label: fig-tamanho-falas
 #| fig-cap: "Personagens conforme média de palavras por fala"
+#| fig-align: center
 
 
 ### TAMANHO DAS FALAS POR PERSONAGEM
@@ -380,7 +445,18 @@ ggplot(avg_words, aes(x = reorder(raw_character_text, mean_words), y = mean_word
     x = "Personagem",
     y = "Palavras por fala"
   ) +
-  theme_minimal()
+  theme_bw() +
+  theme(
+    plot.background = element_rect(colour = "#282A28"),
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 12, color = "#282A28"),
+    axis.text = element_text(size = 11),
+    axis.title = element_text(face = "bold"),
+    axis.title.y = element_blank(),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    plot.margin = margin(8,12,8,12)
+  )
 ```
 
 ```{r, echo=FALSE}
@@ -412,11 +488,12 @@ frases_personagens %>%
 
 <p>Através do [Gráfico @fig-tamanho-falas], nota-se que, embora os personagens principais da família tenham um volume de falas bastante superior aos demais, nenhum deles aparece entre aqueles com as falas mais longas. Um indicativo da explicação para isso pode ser visto na [Tabela @tbl-frases], que mostra as expressões mais faladas pelos personagens, e onde é possível ver que algumas das frases mais repetidas pela família Simpson são interjeições e exclamações curtas.</p>
 
-<p>Na sequência das análises, avaliou-se a variação entre as temporadas do volume de falas dos personagens, focando apenas nos membros da família. A partir desta análise, decidiu-se investigar uma possível influência dos volumes de falas sobre as notas do IMDb vistas anteriormente. Os resultados são mostrados nos gráficos a seguir.</p>
+<p>Na sequência das análises, avaliou-se a variação entre as temporadas do volume de falas dos personagens, focando apenas nos membros da família. A partir desta análise, decidiu-se investigar uma possível influência dos volumes de falas sobre as notas do IMDb vistas anteriormente. Os resultados são mostrados nos gráficos a seguir.</p><br>
 
 ```{r, echo=FALSE}
 #| label: fig-evol-falas
 #| fig-cap: "Evolução do volume de falas"
+#| fig-align: center
 
 
 ### EVOLUÇÃO DAS FALAS POR TEMPORADA
@@ -430,21 +507,34 @@ trend <- script %>%
 
 ggplot(trend, aes(x = season, y = n_lines, color = raw_character_text)) +
   geom_line(linewidth = 1) +
-  geom_point() +
+  scale_color_manual(values = c("Homer Simpson" = "#FFC60A", "Marge Simpson" = "#009DDC", 
+                                    "Bart Simpson" = "#EF2D56", "Lisa Simpson" = "#62C332",
+                                "Grampa Simpson" = "#363537")) +
+  geom_point(shape = 21, size = 2, color = "#141415", fill = "#E0E0E1") +
   labs(
     title = "Evolução das falas por temporada",
     x = "Temporada",
     y = "Número de falas"
   ) +
-  theme_minimal() +
+  theme_bw() +
   theme(
-    legend.title = element_blank()
+    plot.background = element_rect(colour = "#282A28"),
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 12, color = "#282A28"),
+    axis.text = element_text(size = 11),
+    axis.title = element_text(face = "bold"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    plot.margin = margin(8,12,8,12),
+    legend.title = element_blank(),
+    legend.position = "bottom"
   )
 ```
 
 ```{r, echo=FALSE}
 #| label: fig-rating-genero
 #| fig-cap: "Dispersão: Notas IMDb x Falas por gênero"
+#| fig-align: center
 
 
 dados <- frases_com_personagem_completo %>%
@@ -469,12 +559,12 @@ grafico <- ggplot(plot_data, aes(x = total_words_in_episode, y = imdb_rating)) +
       ) +
       theme_bw() +
       theme(
+        plot.background = element_rect(colour = "#282A28"),
+        plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5, size = 12, color = "#282A28"),
         axis.text = element_text(size = 11),
         axis.title = element_text(face = "bold"),
-        plot.background = element_rect(colour = "#605F57"),
-        plot.margin = margin(5,8,5,8),
-        plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
-        plot.subtitle = element_text(size = 11, hjust = 0.5),
+        plot.margin = margin(8,12,8,12),
         strip.text = element_text(face = "bold", size = 12),
         strip.background = element_rect(fill = '#605F57', colour = '#605F57'),
         legend.position = "bottom"
@@ -485,6 +575,7 @@ grafico
 ```{r, echo=FALSE}
 #| label: fig-falas-genero
 #| fig-cap: "Razão do volume de falas por gênero"
+#| fig-align: center
 
 frases_com_personagem_completo <- script %>%
   left_join(simpsons_characters, by = c("character_id" = "id")) %>%
@@ -522,10 +613,14 @@ plot_proporcao <- ggplot(prop_gen,
   ) +
   theme_bw() +
   theme(
-    plot.background = element_rect(colour = "gray50"),
-    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, size = 10, color = "gray50"),
-    
+    plot.background = element_rect(colour = "#282A28"),
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 12, color = "#282A28"),
+    axis.text = element_text(size = 11),
+    axis.title = element_text(face = "bold"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    plot.margin = margin(8,12,8,12)
   )
     
 plot_proporcao
