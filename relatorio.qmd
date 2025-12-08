@@ -367,7 +367,9 @@ A análise das notas dadas aos episódios por temporada, mostrada no [Gráfico @
 
 ## Diálogos dos Personagens
 
-<p>A análise dos diálogos fixou-se, principalmente, na quantidade de palavras ou frases faladas pelos personagens. Inicialmente, uma análise do número de falas dos personagens resultou no gráfico seguinte.</p><br>
+<p>A análise dos diálogos fixou-se, principalmente, na quantidade de palavras ou frases faladas pelos personagens. Inicialmente, uma análise do número de falas dos personagens resultou no gráfico seguinte.</p>
+
+<br>
 
 ```{r, echo=FALSE}
 #| label: fig-mais-falam
@@ -488,7 +490,9 @@ frases_personagens %>%
 
 <p>Através do [Gráfico @fig-tamanho-falas], nota-se que, embora os personagens principais da família tenham um volume de falas bastante superior aos demais, nenhum deles aparece entre aqueles com as falas mais longas. Um indicativo da explicação para isso pode ser visto na [Tabela @tbl-frases], que mostra as expressões mais faladas pelos personagens, e onde é possível ver que algumas das frases mais repetidas pela família Simpson são interjeições e exclamações curtas.</p>
 
-<p>Na sequência das análises, avaliou-se a variação entre as temporadas do volume de falas dos personagens, focando apenas nos membros da família. A partir desta análise, decidiu-se investigar uma possível influência dos volumes de falas sobre as notas do IMDb vistas anteriormente. Os resultados são mostrados nos gráficos a seguir.</p><br>
+<p>Na sequência das análises, avaliou-se a variação entre as temporadas do volume de falas dos personagens, focando apenas nos membros da família. A partir desta análise, decidiu-se investigar uma possível influência dos volumes de falas sobre as notas do IMDb vistas anteriormente. Os resultados são mostrados nos gráficos a seguir.</p>
+
+<br>
 
 ```{r, echo=FALSE}
 #| label: fig-evol-falas
@@ -639,3 +643,9 @@ A queda na popularidade, porém, parece não afetar a admiração daqueles que p
 A análise dos diálogos dos personagens revela curiosidades interessantes. Os personagens de maior destaque, como seria esperado, são os membros da família, com amplo destaque para Homer Simpson. O patriarca teve, nos anos de 2010 a 2016, mais que o dobro de falas dos seus familiares, conforme visto no [Gráfico @fig-mais-falam]. Com relação aos outros membros da família, o [Gráfico @fig-evol-falas] exibe uma aparente tendência de aumento da participação da mãe, Marge Simpson, nos diálogos. Nota-se que, a partir da temporada 24, ela passa a ser a personagem com mais falas depois de Homer.
 
 A grande disparidade no volume de falas de Homer motivou a análise de uma possível influência do gênero dos personagens sobre as avaliações no IMDb. O [Gráfico @fig-rating-genero], porém, não demontrou indícios dessa relação. Entretanto, outra informação extraída deste mesmo gráfico é que o volume de falas dos personagens do gênero masculino é bastante superior às do gênero feminino. Em praticamente todos os episódios, os homens ultrapassam 1000 palavras faladas, enquanto as mulheres raramente se aproximam desta marca. Esta diferença pode ser quantificada pelo [Gráfico @fig-falas-genero], que mostra que a razão do volume de falas entre os gêneros ao longo das temporadas é de aproximadamente 3. Ou seja, os personagens masculinos têm cerca de 3 vezes mais participação nos episódios. Assim, conclui-se que Os Simpsons ainda é um importante sucesso de audiência, porém deixa a desejar em relação à representatividade dos personagens.
+
+
+
+# 5. Referências
+
+Teste
