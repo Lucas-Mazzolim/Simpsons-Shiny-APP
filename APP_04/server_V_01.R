@@ -15,14 +15,23 @@ server <- function(input, output) {
   # ABA 1: PERSONAGENS
   output$plot_barras <- renderPlotly({
     df <- dados_filtrados() |> count(raw_character_text, name="n") |> arrange(desc(n)) |> slice_head(n=15)
-    
+    max_val <- max(df$n) #escalas intervalar 500
+    limite_eixo <- ceiling(max_val / 500) * 500  #escalas intervalar 500
     p <- ggplot(df, aes(x = n, 
                         y = reorder(raw_character_text, n),
                         # TOOLTIP CUSTOMIZADO
                         text = paste("Personagem:", raw_character_text, "<br>Falas:", n))) + 
       geom_col(fill="#FED90F", color="black") +
+      scale_x_continuous(breaks = seq(0, limite_eixo, by = 500), 
+                         expand = expansion(mult = c(0, 0.05))   # Remove o espaço vazio antes do 0
+      ) +
       labs(x="Linhas de Fala", y="") + 
-      theme_minimal()
+      theme_minimal() + 
+      theme(
+        panel.grid.major.y = element_blank(), # Remove linhas horizontais (desnecessárias em gráfico de barra)
+        panel.grid.minor.x = element_blank(), # Remove grades menores para não poluir
+        axis.text = element_text(size=10, color="black")
+      )
     
     ggplotly(p, tooltip = "text")
   })
@@ -42,10 +51,36 @@ server <- function(input, output) {
   
   # ABA 2: LOCAIS
   output$plot_locais <- renderPlotly({
-    df <- dados_filtrados() |> count(raw_location_text, name="n") |> arrange(desc(n)) |> slice_head(n=15)
-    p <- ggplot(df, aes(reorder(raw_location_text, n), n)) + geom_col(fill="#009DDC", color="black") + # Azul Marge
-      coord_flip() + labs(x="", y="Aparições em Cena") + theme_minimal()
-    ggplotly(p)
+    df <- dados_filtrados() |> count(raw_location_text, name="n") |> 
+      arrange(desc(n)) |> slice_head(n=15)
+    max_val <- max(df$n)
+    limite_eixo <- ceiling(max_val / 500) * 500
+    # p <- ggplot(df, aes(reorder(raw_location_text, n), n)) + geom_col(fill="#009DDC", color="black") + # Azul Marge
+    #   coord_flip() + labs(x="", y="Aparições em Cena") + theme_minimal()
+    # ggplotly(p)
+    p <- ggplot(df, aes(x = n, 
+                        y = reorder(raw_location_text, n),
+                        # AQUI ESTÁ A MÁGICA DO TOOLTIP LIMPO:
+                        text = paste("Local:", raw_location_text, "<br>Cenas:", n))) + 
+      
+      geom_col(fill="#009DDC", color="black", width = 0.75) + 
+      
+      # Ajuste da escala de 500 em 500
+      scale_x_continuous(
+        breaks = seq(0, limite_eixo, by = 500),
+        expand = expansion(mult = c(0, 0.05)) # Tira o espaço vazio no começo
+      ) +
+      
+      labs(x="Aparições em Cena", y="") + 
+      theme_minimal() +
+      theme(
+        panel.grid.major.y = element_blank(), # Limpa linhas horizontais
+        panel.grid.minor.x = element_blank(),
+        axis.text = element_text(size=10, color="black")
+      )
+    
+    # 4. Renderiza com o tooltip forçado apenas para o texto que criamos
+    ggplotly(p, tooltip = "text")
   })
   
   output$tabela_locais <- renderDT({
@@ -98,15 +133,15 @@ server <- function(input, output) {
     ggplotly(p, tooltip="text")
   })
   
-  output$plot_heatmap <- renderPlot({
-    df <- dados_eps_unicos() |> mutate(
-      v_grp = cut(us_viewers_in_millions, breaks=quantile(us_viewers_in_millions,probs=0:4/4), include.lowest=T, labels=c("Baixa","Média-","Média+","Alta")),
-      r_grp = cut(imdb_rating, breaks=quantile(imdb_rating,probs=0:4/4), include.lowest=T, labels=c("Baixa","Média-","Média+","Alta"))
-    )
-    if(nrow(df)<5) return(NULL)
-    ggplot(df %>% count(v_grp, r_grp), aes(v_grp, r_grp, fill=n)) + geom_tile(color="white") + geom_text(aes(label=n), size=5) +
-      scale_fill_gradient(low="#FFF5F0", high="#CB181D") + labs(x="Audiência", y="Nota") + theme_minimal()
-  })
+  # output$plot_heatmap <- renderPlot({
+  #   df <- dados_eps_unicos() |> mutate(
+  #     v_grp = cut(us_viewers_in_millions, breaks=quantile(us_viewers_in_millions,probs=0:4/4), include.lowest=T, labels=c("Baixa","Média-","Média+","Alta")),
+  #     r_grp = cut(imdb_rating, breaks=quantile(imdb_rating,probs=0:4/4), include.lowest=T, labels=c("Baixa","Média-","Média+","Alta"))
+  #   )
+  #   if(nrow(df)<5) return(NULL)
+  #   ggplot(df %>% count(v_grp, r_grp), aes(v_grp, r_grp, fill=n)) + geom_tile(color="white") + geom_text(aes(label=n), size=5) +
+  #     scale_fill_gradient(low="#FFF5F0", high="#CB181D") + labs(x="Audiência", y="Nota") + theme_minimal()
+  # })
   
   output$tabela_polemicos <- renderDT({
     # Episódios com alta view e nota baixa (Ex: Quartil 4 de view e Quartil 1 de nota)
@@ -137,5 +172,5 @@ server <- function(input, output) {
       datatable(options=list(pageLength=5), rownames=FALSE)
   })
 }
-
+ 
 shinyApp(ui, server)
