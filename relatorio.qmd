@@ -37,12 +37,16 @@ episodes_clean <- simpsons_episodes %>%
   filter(
     !is.na(us_viewers_in_millions),
     !is.na(imdb_rating),
-    season != 28)
+    season != 28) %>%
+  select(-image_url, -video_url) 
 
 
 #Limpeza das Linhas do Script
-script_lines_clean <- simpsons_script_lines %>% 
-  filter(!is.na(raw_character_text))
+script_lines_clean <- simpsons_script_lines %>%
+  filter(!is.na(raw_character_text),raw_character_text != "",
+         !is.na(spoken_words),spoken_words != "",
+         str_trim(spoken_words) != "") %>%
+          select(-timestamp_in_ms)
 
 script_completo <- script_lines_clean %>%
   inner_join(episodes_clean, by = c("episode_id" = "id")) %>% 
