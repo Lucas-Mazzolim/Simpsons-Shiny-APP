@@ -8,8 +8,8 @@ fig-align: center
 fig-auto-id: true
 tbl-auto-id: true
 tbl-cap-location: bottom
-bibliography: referencia.bibcs
-l: estilo_abnt.csl
+bibliography: referencia.bib
+csl: estilo_abnt.csl
 css: style.css
 crossref:
   fig-prefix: "Gráfico"
@@ -18,6 +18,9 @@ crossref:
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #pacotes necessários
+install.packages("tidytuesdayR")
+install.packages("tidyverse")
+
 library(tidytuesdayR)
 library(tidyverse)
 library(tidytext)
