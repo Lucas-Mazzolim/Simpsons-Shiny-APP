@@ -1,5 +1,6 @@
----title: "Os Simpsons em Números"
-format: html_document
+---
+title: "Os Simpsons em Números"
+format: html
 editor: visual
 lang: pt
 toc: true
@@ -7,16 +8,19 @@ fig-align: center
 fig-auto-id: true
 tbl-auto-id: true
 tbl-cap-location: bottom
-bibliography: referencia.bibcs
-l: estilo_abnt.csl
+bibliography: referencia.bib
+csl: estilo_abnt.csl
 css: style.css
 crossref:
   fig-prefix: "Gráfico"
   fig-title: "Gráfico"
-  ---
+---
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #pacotes necessários
+install.packages("tidytuesdayR")
+install.packages("tidyverse")
+
 library(tidytuesdayR)
 library(tidyverse)
 library(tidytext)
