@@ -1,6 +1,5 @@
----
-title: "Os Simpsons em Números"
-format: html
+---title: "Os Simpsons em Números"
+format: html_document
 editor: visual
 lang: pt
 toc: true
@@ -8,13 +7,13 @@ fig-align: center
 fig-auto-id: true
 tbl-auto-id: true
 tbl-cap-location: bottom
-bibliography: referencia.bib
-csl: estilo_abnt.csl
+bibliography: referencia.bibcs
+l: estilo_abnt.csl
 css: style.css
-crossref: 
+crossref:
   fig-prefix: "Gráfico"
   fig-title: "Gráfico"
----
+  ---
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #pacotes necessários
@@ -77,7 +76,7 @@ A análise das avaliações do público será feita com base nas notas dadas aos
 
 # 2. Materiais e Métodos
 
-## Conjunto de Dados
+## 2.1. Conjunto de Dados
 
 O conjunto de dados foi obtido a partir do repositório GitHub do projeto Tidy Tuesday, que disponibiliza, semanalmente, conjuntos de dados para desafios e prática da comunidade de ciência de dados. Para a obtenção dos dados, utilizou-se o pacote *tidytuesdayR* através do RStudio. O código R para obtenção dos dados é mostrado a seguir:
 
@@ -183,7 +182,7 @@ estrutura %>%
 
 ```
 
-## Preparação dos Dados
+## 2.2. Preparação dos Dados
 
 Inicialmente, para viabilizar as análises de audiência dos episódios, a tabela `simpsons_episodes` foi filtrada para remoção de observações NA das variáveis de audiência e avaliação IMDb, identificadas como `us_viewers_in_millions` e `imdb_rating`. Também foram excluídas as colunas `image_url e video_url`, que não teriam aplicabilidade para as análises desejadas. Por fim, foram limpos os dados da temporada 28 que estavam incompletos no conjunto de dados. O preparo da tabela foi realizado utilizando o código a seguir:
 
@@ -226,7 +225,7 @@ Estes são os passos básicos de tratamento, utilizados para limpar e preparar t
 
 # 3. Resultados e Discussão
 
-## Audiência e Avaliações IMDb
+## 3.1. Audiência e Avaliações IMDb
 
 A primeira análise realizada considerou a audiência dos episódios medida nos Estados Unidos. Os dados foram agrupados por temporada e a audiência média é exibida a seguir:<br><br>
 
@@ -420,9 +419,45 @@ ggplot(corr_by_season_votes, aes(x = season, y = corr)) +
   )
 ```
 
-A análise das notas dadas aos episódios por temporada, mostrada no [Gráfico @fig-boxplot-imdb] acima mostrou haver pouca variação média das notas ao longo do tempo. Considerando este dado em conjunto com a queda de audiência vista anteriormente, analisou-se a existência de correlação entre as variáveis de audiência e notas, tanto visualmente quanto através do coeficiente de correlação de Pearson. O [Gráfico @fig-views-nota] mostra de forma visual que não parece haver correlação significativa entre as variáveis. O que é confirmado pelos coeficientes de Pearson calculados para cada temporada, vistos no [Gráfico @fig-corr-temporada].
+A análise das notas dadas aos episódios por temporada, mostrada no [Gráfico @fig-boxplot-imdb] acima mostrou haver pouca variação média das notas ao longo do tempo. Considerando este dado em conjunto com a queda de audiência vista anteriormente, analisou-se a existência de correlação entre as variáveis de audiência e notas, e entre as variaveis audiência e quantidade de votos, tanto visualmente quanto através do coeficiente de correlação de Pearson.
 
-## Diálogos dos Personagens
+Em relação a correlação entre audiência e notas, o coeficiente de correlação de Pearson calculado foi de r = 0,112, indicando uma correlação positiva, porém fraca. Essa tendência é confirmada pelo modelo de regressão linear simples (β = 0,0247; p = 0,175), cujo coeficiente inclinado não apresenta significância estatística. Além disso, o modelo explica menos de 1,3% da variabilidade das notas (R² = 0,0125), reforçando que a audiência não é um preditor relevante da avaliação crítica dos episódios. Por fim, o gráfico [Gráfico @fig-views-nota] mostra de forma visual que não parece haver correlação significativa entre as variáveis. O que é confirmado pelos coeficientes de Pearson calculados para cada temporada, vistos no [Gráfico @fig-corr-temporada].
+
+```{r eval=FALSE}
+
+correlation <- cor(episodes_clean$us_viewers_in_millions,
+                   episodes_clean$imdb_rating,
+                   method = "pearson")
+
+corr_by_season_rating <- episodes_clean %>%
+  group_by(season) %>%
+  summarise(
+    n = n(),
+    corr = cor(us_viewers_in_millions, imdb_rating, use = "complete.obs", method = "pearson")
+  )
+
+model <- lm(imdb_rating ~ us_viewers_in_millions, data = episodes_clean)
+summary(model)
+
+```
+
+Já em relação a correlação entre audiência e notas, a correlação de Pearson calculada no conjunto completo dos dados indica uma relação positiva e de magnitude moderada (r = 0,45 no conjunto geral; variando de 0,09 a 0,66 por temporada). Apesar da variabilidade sazonal, observa-se que, a partir da 24ª temporada, os coeficientes tornam-se consistentemente mais elevados (0,43–0,66), sugerindo que essa associação se fortalece nas temporadas mais recentes. Essa tendência é corroborada pelo modelo de regressão linear simples, que apresenta um coeficiente angular positivo e estatisticamente significativo (β = 28,92, p < 0,001). Esse resultado indica que episódios com maior audiência tendem a receber um número maior de votos na plataforma, e esse padrão não ocorre ao acaso. O modelo apresenta ainda um R² de 0,20, revelando que aproximadamente 20% da variação no número de votos pode ser explicada apenas pela audiência.
+
+```{r eval=FALSE}
+
+corr_by_season_votes <- episodes_clean %>%
+  group_by(season) %>%
+  summarise(
+    n = n(),
+    corr = cor(us_viewers_in_millions, imdb_votes, use = "complete.obs", method = "pearson")
+  )
+
+model_votes <- lm(imdb_votes ~ us_viewers_in_millions, data = episodes_clean)
+summary(model_votes)
+
+```
+
+## 3.2. Diálogos dos Personagens
 
 <p>A análise dos diálogos fixou-se, principalmente, na quantidade de palavras ou frases faladas pelos personagens. Inicialmente, uma análise do número de falas dos personagens resultou no gráfico seguinte.</p>
 
@@ -701,11 +736,13 @@ A análise dos diálogos dos personagens revela curiosidades interessantes. Os p
 
 A grande disparidade no volume de falas de Homer motivou a análise de uma possível influência do gênero dos personagens sobre as avaliações no IMDb. O [Gráfico @fig-rating-genero], porém, não demontrou indícios dessa relação. Entretanto, outra informação extraída deste mesmo gráfico é que o volume de falas dos personagens do gênero masculino é bastante superior às do gênero feminino. Em praticamente todos os episódios, os homens ultrapassam 1000 palavras faladas, enquanto as mulheres raramente se aproximam desta marca. Esta diferença pode ser quantificada pelo [Gráfico @fig-falas-genero], que mostra que a razão do volume de falas entre os gêneros ao longo das temporadas é de aproximadamente 3. Ou seja, os personagens masculinos têm cerca de 3 vezes mais participação nos episódios. Assim, conclui-se que Os Simpsons ainda é um importante sucesso de audiência, porém deixa a desejar em relação à representatividade dos personagens.
 
+Por fim, em relação às limitações deste estudo, embora a base utilizada seja relativamente completa, ainda existem dados ausentes e incompletos, o que pode reduzir ligeiramente a precisão das estimativas. Além disso, a ausência de variáveis contextuais como horário de exibição, concorrência televisiva, estratégias de marketing ou presença de convidados especiais limita a capacidade de compreender plenamente os fatores que influenciam audiência, notas e engajamento. Outro ponto importante é o viés de auto-seleção inerente às avaliações do IMDb: muitas vezes, usuários motivados escolhem atribuir notas e votos, o que pode não refletir a opinião do público geral. Ademais, mudanças no padrão de consumo de mídia ao longo das décadas, com a transição da TV aberta para o streaming, tornam menos comparáveis os episódios de diferentes períodos, introduzindo variações não controladas na análise.
+
 
 # 5. Referências Bibliográficas
 
 1.  https://ggplot2.tidyverse.org/reference/geom_boxplot.html
 
-2.  OpenAI. ChatGPT, versão GPT-5. Inteligência Artificial. Disponível em: https://chatgpt.com/share/6937a7c4-3c84-800f-8dfd-67f52d350539 Acesso em: 09 de Dezembro de 2025
+2.  WICKHAM, Hadley; GROLEMUND, Garrett. R for Data Science: Import, Tidy, Transform, Visualize, and Model Data. 1. ed. Sebastopol: O’Reilly Media, 2017.
 
 3. https://simpsons.fandom.com/pt-br/wiki/Wiki_Simpsons
