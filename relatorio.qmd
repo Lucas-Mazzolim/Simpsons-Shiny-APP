@@ -17,11 +17,14 @@ crossref:
 ---
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-
+#pacotes necessários
 library(tidytuesdayR)
 library(tidyverse)
 library(tidytext)
+library(ggplot2)
+library(dplyr)
 
+#Carregamento dos dados
 tuesdata <- tidytuesdayR::tt_load('2025-02-04')
 
 simpsons_characters <- tuesdata$simpsons_characters
@@ -29,24 +32,33 @@ simpsons_episodes <- tuesdata$simpsons_episodes
 simpsons_locations <- tuesdata$simpsons_locations
 simpsons_script_lines <- tuesdata$simpsons_script_lines
 
+#Limpeza dos Episódios
 episodes_clean <- simpsons_episodes %>% 
-  filter(!is.na(us_viewers_in_millions),
-         !is.na(imdb_rating)) #Limpeza da base de dados
+  filter(
+    !is.na(us_viewers_in_millions),
+    !is.na(imdb_rating),
+    season != 28)
 
 
-script <- simpsons_script_lines %>%
-  left_join(simpsons_episodes, 
-            by = c("episode_id" = "id"))
+#Limpeza das Linhas do Script
+script_lines_clean <- simpsons_script_lines %>% 
+  filter(!is.na(raw_character_text))
 
-frases_com_personagem <- script %>%
-  left_join(simpsons_characters, by = c("character_id" = "id")) %>%
+script_completo <- script_lines_clean %>%
+  inner_join(episodes_clean, by = c("episode_id" = "id")) %>% 
+  left_join(simpsons_characters, by = c("character_id" = "id"))
+
+# Frases com personagem
+frases_com_personagem <- script_completo %>%
   filter(!is.na(spoken_words), spoken_words != "") %>%
   count(name, spoken_words, sort = TRUE)
 
-frases_com_personagem_completo <- script %>%
-  left_join(simpsons_characters, by = c("character_id" = "id")) %>%
+# tratamento de Gênero
+frases_com_personagem_completo <- script_completo %>%
   filter(!is.na(spoken_words), spoken_words != "", !is.na(gender)) %>%
-  mutate(gender = if_else(gender == "f", "Feminino","Masculino"))
+  mutate(gender = if_else(gender == "f", "Feminino", "Masculino"))
+
+head(frases_com_personagem_completo)
 ```
 
 # 1. Introdução
@@ -55,7 +67,7 @@ Os Simpsons é a série animada há mais tempo no ar na TV dos Estados Unidos. S
 
 Em mais de 30 anos de exibição, a série já se envolveu em inúmeras polêmicas, inclusive com o público brasileiro, graças a um episódio da 13ª temporada, que mostrava o Brasil como um lugar violento, onde as ruas eram infestadas de macacos e as pessoas se movimentavam dançando conga. [@CanaltechSimpsonsBrasil] Ao longo dos anos, a audiência do show diminuiu consideravelmente, mas a família Simpson ainda se mantém relevante, com episódios assistidos por milhões de pessoas, não apenas nos Estados Unidos, mas em todo o mundo. [@SchneiderSimpsons]
 
-Neste trabalho, será apresentada uma análise dos episódios das temporadas 21 a 28, exibidos entre os anos de 2010 a 2016, considerando dados de audiência, avaliação do público e caracaterísticas dos diálogos entre os personagens. Pretende-se avaliar as tendências de variação da audiência e da avaliação popular dos episódios ao longo do tempo, e também a existência de correlações entre essas duas variáveis. Serão verificadas, também, tendências de variação no volume de palavras faladas pelos personagens, possíveis correlações entre este volume e a avaliação popular, além de diferenças relacionadas ao gênero dos personagens.
+Neste trabalho, será apresentada uma análise dos episódios das temporadas 21 a 27, exibidos entre os anos de 2010 a 2016, considerando dados de audiência, avaliação do público e caracaterísticas dos diálogos entre os personagens. Pretende-se avaliar as tendências de variação da audiência e da avaliação popular dos episódios ao longo do tempo, e também a existência de correlações entre essas duas variáveis. Serão verificadas, também, tendências de variação no volume de palavras faladas pelos personagens, possíveis correlações entre este volume e a avaliação popular, além de diferenças relacionadas ao gênero dos personagens.
 
 A análise das avaliações do público será feita com base nas notas dadas aos episódios pelos usuários do [IMDb](http://www.imdb.com), um popular site de informações sobre produções audiovisuais, em que os usuários podem dar notas de 1 a 10 aos programas.
 
@@ -169,13 +181,13 @@ estrutura %>%
 
 ## Preparação dos Dados
 
-Inicialmente, para viabilizar as análises de audiência dos episódios, a tabela `simpsons_episodes` foi filtrada para remoção de observações NA das variáveis de audiência e avaliação IMDb, identificadas como `us_viewers_in_millions` e `imdb_rating`. Também foram excluídas as colunas `image_url e video_url`, que não teriam aplicabilidade para as análises desejadas. O preparo da tabela foi realizado utilizando o código a seguir:
+Inicialmente, para viabilizar as análises de audiência dos episódios, a tabela `simpsons_episodes` foi filtrada para remoção de observações NA das variáveis de audiência e avaliação IMDb, identificadas como `us_viewers_in_millions` e `imdb_rating`. Também foram excluídas as colunas `image_url e video_url`, que não teriam aplicabilidade para as análises desejadas. Por fim, foram limpos os dados da temporada 28 que estavam incompletos no conjunto de dados. O preparo da tabela foi realizado utilizando o código a seguir:
 
 ```{r, eval=FALSE}
 
 episodes_clean <- simpsons_episodes %>% 
   filter(!is.na(us_viewers_in_millions),
-         !is.na(imdb_rating)) %>%
+         !is.na(imdb_rating),season != 28 ) %>%
   select(-c(image_url,video_url))
 
 ```
@@ -184,13 +196,18 @@ Para trabalhar com os diálogos dos personagens, foram unidas as tabelas de epis
 
 ```{r, eval=FALSE}
 
+# script <- simpsons_script_lines %>%
+#   left_join(simpsons_episodes %>% select(id, season), 
+#             by = c("episode_id" = "id"))
+
 script <- simpsons_script_lines %>%
-  left_join(simpsons_episodes %>% select(id, season), 
-            by = c("episode_id" = "id"))
+  filter(!is.na(raw_character_text)) %>%
+  inner_join(simpsons_episodes %>% select(id, season), 
+             by = c("episode_id" = "id"))
 
 ```
 
-E finalmente, eliminaram-se as linhas da tabela que não correspondiam a diálogos, onde a coluna `spoken_words`encontrava-se vazia ou com valor NA.
+E finalmente, eliminaram-se as linhas da tabela que não correspondiam a diálogos, onde a coluna `spoken_words`encontrava-se vazia ou com valor NA e as linhas cuja varável `raw_character_text` continham NA's, uma vez que esses valores não traziam benefícios nenhum a análise.
 
 ```{r eval=FALSE}
 
@@ -219,34 +236,55 @@ views_by_season <- episodes_clean %>%
   summarise(
     mean_viewers = mean(us_viewers_in_millions, na.rm = TRUE),
     n = n()
-  )
+  ) %>% 
+  ungroup()
 
-ggplot(views_by_season, aes(season, mean_viewers)) +
-  geom_line() +
-  geom_point() +
+inicio <- views_by_season %>% slice(1)
+fim <- views_by_season %>% slice(n())
+perc_queda <- (fim$mean_viewers - inicio$mean_viewers) / inicio$mean_viewers
+texto_queda <- paste0("Queda de ", scales::percent(abs(perc_queda), accuracy = 1))
+
+# 3. Gráfico
+ggplot(views_by_season, aes(x = season, y = mean_viewers)) +
+  geom_line(size = 1) +
+  geom_point(size = 2) +
+  
   geom_text(
-    aes(label = round(mean_viewers,2), vjust = -0.7) 
+    aes(label = round(mean_viewers, 2)), 
+    vjust = -0.8, 
+    fontface = "bold",
+    size = 3.5
   ) +
-  scale_y_continuous(limits = c(3,8)) +
+  annotate("segment", x = inicio$season, xend = fim$season, 
+           y = inicio$mean_viewers, yend = fim$mean_viewers, 
+           colour = "red", linetype = "dashed", alpha = 0.6,
+           arrow = arrow(length = unit(0.2, "cm"))) +
+  annotate("text", x = mean(c(inicio$season, fim$season)), 
+           y = mean(c(inicio$mean_viewers, fim$mean_viewers)) - 0.3, 
+           label = texto_queda, color = "red", fontface = "italic") +
+
+  scale_y_continuous(limits = c(3, 8)) +
+  scale_x_continuous(breaks = views_by_season$season) + 
   labs(
     title = "Audiência Média por Temporada",
+    subtitle = paste("Comparativo entre as temporadas", min(views_by_season$season), "e", max(views_by_season$season)),
     x = "Temporada",
-    y = "Audiência média (milhões de espectadores)"
+    y = "Audiência média (milhões)"
   ) +
   theme_bw() +
   theme(
     plot.background = element_rect(colour = "#282A28"),
     plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, size = 12, color = "#282A28"),
-    axis.text = element_text(size = 11),
+    plot.subtitle = element_text(hjust = 0.5, size = 10, color = "gray40"),
+    axis.text = element_text(size = 11, color = "black"),
     axis.title = element_text(face = "bold"),
     panel.grid.major.x = element_blank(),
     panel.grid.minor.x = element_blank(),
-    plot.margin = margin(8,12,8,12)
+    plot.margin = margin(10, 10, 10, 10)
   )
 ```
 
-O gráfico mostra uma queda acentuada na média de espectadores por temporada desde a temporada 22, chegando a uma redução de cerca de 50%.
+O gráfico mostra uma queda acentuada na média de espectadores por temporada desde a temporada 22, chegando a uma redução de cerca de 40%.
 
 A seguir, são exibidos os resultados obtidos para a análise das notas no IMDb.<br><br>
 
@@ -255,51 +293,54 @@ A seguir, são exibidos os resultados obtidos para a análise das notas no IMDb.
 #| fig-cap: "Boxplot: Notas IMDb por temporada"
 #| fig-align: center
 
-imdb_summary <- episodes_clean %>%
-  filter(season != 27 & season !=28) %>%
-  group_by(season) %>%
-  summarise(
-    n_episodios = n(),
-    media = mean(imdb_rating, na.rm = TRUE),
-    mediana = median(imdb_rating, na.rm = TRUE),
-    desvio = sd(imdb_rating, na.rm = TRUE),
-    minimo = min(imdb_rating, na.rm = TRUE),
-    maximo = max(imdb_rating, na.rm = TRUE)
-  ) %>%
-  arrange(media)
+dados_plot <- episodes_clean %>% 
+  filter(season != 28) %>% 
+  mutate(season = as.factor(season))
 
-ggplot(episodes_clean, aes(x = factor(season), y = imdb_rating)) +
-  geom_boxplot(outlier.color = "red", outlier.size = 2) +
-  stat_summary(
-    fun = mean, 
-    geom = "point", 
-    shape = 22, 
-    size = 2, 
-    fill = "#EB8495", 
+ggplot(dados_plot, aes(x = season, y = imdb_rating)) +
+  geom_jitter(
+    color = "gray60", 
+    width = 0.2,
+    alpha = 0.6,
+    size = 1.5
+  ) +
+  geom_boxplot(
+    fill = "#FFD90F",
+    color = "black",
+    alpha = 0.8,
+    outlier.color = "red", 
+    outlier.shape = 19,
+    outlier.size = 3
+  ) +
+  
+  stat_summary(fun = mean, geom = "point", 
+    shape = 22, size = 3,fill = "#EB8495", #donut
     color = "black" 
   ) +
   stat_summary(
     fun = mean, 
     geom = "text",
-    aes(label = round(after_stat(y),1)),
-    vjust = 0.6,
-    color = "gray20" 
+    aes(label = round(after_stat(y), 2)),
+    vjust = -2.5,
+    fontface = "bold",
+    size = 3.5,
+    color = "black" 
   ) +
   labs(
-    title = "Boxplot - Notas IMDB por temporada",
+    title = "Distribuição das Notas IMDB por Temporada",
+    subtitle = "com dispersão dos episódios e média destacada",
     x = "Temporada",
     y = "Nota IMDB"
   ) +
   theme_bw() +
   theme(
-    plot.background = element_rect(colour = "#282A28"),
+    plot.background = element_rect(colour = "#282A28", fill = "white"),
     plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, size = 12, color = "#282A28"),
-    axis.text = element_text(size = 11),
+    plot.subtitle = element_text(hjust = 0.5, size = 11, color = "gray40"),
+    axis.text = element_text(size = 11, color = "black"),
     axis.title = element_text(face = "bold"),
     panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank(),
-    plot.margin = margin(8,12,8,12)
+    plot.margin = margin(10, 10, 10, 10)
   )
 ```
 
@@ -308,25 +349,28 @@ ggplot(episodes_clean, aes(x = factor(season), y = imdb_rating)) +
 #| fig-cap: "Correlação: Audiência x Notas IMDb"
 #| fig-align: center
 
+library(ggplot2)
+library(dplyr)
+
 episodes_clean %>% 
   ggplot(aes(x = us_viewers_in_millions, y = imdb_rating)) +
-  geom_point(alpha = 0.6) +
-  geom_smooth(method = "lm", se = FALSE, linewidth = 0.5, linetype = "dashed") +
+  geom_point(aes(color = season), alpha = 0.7, size = 2) +
+  geom_smooth(method = "loess", color = "#404040", se = FALSE, linetype = "dashed", linewidth = 0.8) +
+  scale_color_viridis_c(option = "plasma", name = "Temporada", direction = -1) + #escala # de cores
+  scale_x_continuous(labels = scales::label_number(suffix = " mi")) +
   labs(
-    title = "Audiência vs IMDb Rating — The Simpsons",
-    x = "Audiência nos EUA (milhões)",
-    y = "Nota no IMDb"
-  ) +
-  theme_bw() +
+    title = "Evolução de 'The Simpsons': Audiência vs. Qualidade",
+    x = "Audiência nos EUA (Milhões)",
+    y = "Nota IMDb") +
+  theme_minimal() +
   theme(
-    plot.background = element_rect(colour = "#282A28"),
-    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, size = 12, color = "#282A28"),
-    axis.text = element_text(size = 11),
-    axis.title = element_text(face = "bold"),
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank(),
-    plot.margin = margin(8,12,8,12)
+    plot.title = element_text(size = 16, face = "bold", color = "#2c3e50"),
+    plot.subtitle = element_text(size = 12, color = "#7f8c8d", margin = margin(b = 10)),
+    legend.position = "right",
+    panel.grid.minor = element_blank(),
+    panel.grid.major = element_line(color = "grey90"),
+    axis.text = element_text(size = 11, color = "black"),
+    axis.title = element_text(face = "bold")
   )
 ```
 
@@ -340,26 +384,35 @@ corr_by_season_votes <- episodes_clean %>%
   summarise(
     n = n(),
     corr = cor(us_viewers_in_millions, imdb_votes, use = "complete.obs", method = "pearson")
-  )
+  ) %>%
+  ungroup()
 
 ggplot(corr_by_season_votes, aes(x = season, y = corr)) +
-  geom_line(linewidth = 0.65, color = "darkred") +
-  geom_point(size = 2, shape = 21, color = "#333234", fill = "#EB8495") +
+  
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray60") +
+  geom_segment(aes(xend = season, yend = 0, color = corr), linewidth = 1) +
+  geom_point(aes(color = corr), size = 4) +
+  geom_text(aes(label = round(corr, 2)), vjust = -0.8, size = 3, color = "#333333") +
+  scale_x_continuous(breaks = seq(min(corr_by_season_votes$season), 
+                                  max(corr_by_season_votes$season), 
+                                  by = 1)) +
+  scale_color_gradient(low = "#e0aeb6", high = "#8b0000", name = "Força da\nCorrelação") +
+  scale_y_continuous(limits = c(min(0, min(corr_by_season_votes$corr)), 
+                                max(corr_by_season_votes$corr) + 0.1)) +
   labs(
-    title = "Correlação entre audiência e notas IMDb por temporada",
+    title = "Correlação: Audiência vs Votos no IMDb",
+    subtitle = "Como a quantidade de votos se relaciona com a audiência em cada temporada",
     x = "Temporada",
-    y = "Correlação de Pearson"
+    y = "Correlação de Pearson (r)"
   ) +
-  theme_bw() +
+  theme_minimal() +
   theme(
-    plot.background = element_rect(colour = "#282A28"),
-    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, size = 12, color = "#282A28"),
-    axis.text = element_text(size = 11),
-    axis.title = element_text(face = "bold"),
+    plot.title = element_text(face = "bold", size = 14, color = "#2c3e50"),
+    plot.subtitle = element_text(size = 11, color = "gray40"),
     panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank(),
-    plot.margin = margin(8,12,8,12)
+    panel.grid.minor = element_blank(),
+    axis.text.x = element_text(size = 10, face = "bold"), 
+    legend.position = "none"
   )
 ```
 
@@ -645,7 +698,10 @@ A análise dos diálogos dos personagens revela curiosidades interessantes. Os p
 A grande disparidade no volume de falas de Homer motivou a análise de uma possível influência do gênero dos personagens sobre as avaliações no IMDb. O [Gráfico @fig-rating-genero], porém, não demontrou indícios dessa relação. Entretanto, outra informação extraída deste mesmo gráfico é que o volume de falas dos personagens do gênero masculino é bastante superior às do gênero feminino. Em praticamente todos os episódios, os homens ultrapassam 1000 palavras faladas, enquanto as mulheres raramente se aproximam desta marca. Esta diferença pode ser quantificada pelo [Gráfico @fig-falas-genero], que mostra que a razão do volume de falas entre os gêneros ao longo das temporadas é de aproximadamente 3. Ou seja, os personagens masculinos têm cerca de 3 vezes mais participação nos episódios. Assim, conclui-se que Os Simpsons ainda é um importante sucesso de audiência, porém deixa a desejar em relação à representatividade dos personagens.
 
 
+# 5. Referências Bibliográficas
 
-# 5. Referências
+1.  https://ggplot2.tidyverse.org/reference/geom_boxplot.html
 
-Teste
+2.  OpenAI. ChatGPT, versão GPT-5. Inteligência Artificial. Disponível em: https://chatgpt.com/share/6937a7c4-3c84-800f-8dfd-67f52d350539 Acesso em: 09 de Dezembro de 2025
+
+3. https://simpsons.fandom.com/pt-br/wiki/Wiki_Simpsons
