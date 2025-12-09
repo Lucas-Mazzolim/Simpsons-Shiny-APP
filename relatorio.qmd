@@ -1,5 +1,6 @@
----title: "Os Simpsons em Números"
-format: html_document
+---
+title: "Os Simpsons em Números"
+format: html
 editor: visual
 lang: pt
 toc: true
@@ -13,7 +14,7 @@ css: style.css
 crossref:
   fig-prefix: "Gráfico"
   fig-title: "Gráfico"
-  ---
+---
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #pacotes necessários
@@ -197,7 +198,7 @@ episodes_clean <- simpsons_episodes %>%
 
 Para trabalhar com os diálogos dos personagens, foram unidas as tabelas de episódios, `simpsons_episodes` e de diálogos, `simpsons_script_lines`:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 
 # script <- simpsons_script_lines %>%
 #   left_join(simpsons_episodes %>% select(id, season), 
