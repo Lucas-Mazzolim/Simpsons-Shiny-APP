@@ -65,7 +65,7 @@ frases_com_personagem_completo <- script_completo %>%
   filter(!is.na(spoken_words), spoken_words != "", !is.na(gender)) %>%
   mutate(gender = if_else(gender == "f", "Feminino", "Masculino"))
 
-head(frases_com_personagem_completo)
+#head(frases_com_personagem_completo)
 ```
 
 # 1. Introdução
