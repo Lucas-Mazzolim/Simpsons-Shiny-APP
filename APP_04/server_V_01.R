@@ -23,13 +23,13 @@ server <- function(input, output) {
                         text = paste("Personagem:", raw_character_text, "<br>Falas:", n))) + 
       geom_col(fill="#FED90F", color="black") +
       scale_x_continuous(breaks = seq(0, limite_eixo, by = 500), 
-                         expand = expansion(mult = c(0, 0.05))   # Remove o espaço vazio antes do 0
+                         expand = expansion(mult = c(0, 0.05))
       ) +
       labs(x="Linhas de Fala", y="") + 
       theme_minimal() + 
       theme(
-        panel.grid.major.y = element_blank(), # Remove linhas horizontais (desnecessárias em gráfico de barra)
-        panel.grid.minor.x = element_blank(), # Remove grades menores para não poluir
+        panel.grid.major.y = element_blank(), # Remove linhas horizontais
+        panel.grid.minor.x = element_blank(), # Remove grades menores
         axis.text = element_text(size=10, color="black")
       )
     
@@ -55,12 +55,9 @@ server <- function(input, output) {
       arrange(desc(n)) |> slice_head(n=15)
     max_val <- max(df$n)
     limite_eixo <- ceiling(max_val / 500) * 500
-    # p <- ggplot(df, aes(reorder(raw_location_text, n), n)) + geom_col(fill="#009DDC", color="black") + # Azul Marge
-    #   coord_flip() + labs(x="", y="Aparições em Cena") + theme_minimal()
-    # ggplotly(p)
+
     p <- ggplot(df, aes(x = n, 
                         y = reorder(raw_location_text, n),
-                        # AQUI ESTÁ A MÁGICA DO TOOLTIP LIMPO:
                         text = paste("Local:", raw_location_text, "<br>Cenas:", n))) + 
       
       geom_col(fill="#009DDC", color="black", width = 0.75) + 
@@ -78,8 +75,6 @@ server <- function(input, output) {
         panel.grid.minor.x = element_blank(),
         axis.text = element_text(size=10, color="black")
       )
-    
-    # 4. Renderiza com o tooltip forçado apenas para o texto que criamos
     ggplotly(p, tooltip = "text")
   })
   
@@ -125,23 +120,42 @@ server <- function(input, output) {
   })
   
   #ABA 5: VIEW X NOTA
-  output$plot_scatter_corr <- renderPlotly({
-    p <- ggplot(dados_eps_unicos(), aes(us_viewers_in_millions, imdb_rating)) +
-      geom_point(aes(text=paste(title)), color="#444", alpha=0.5) + labs(x="Audiência", y="Nota") + theme_minimal()
-    if(input$tipo_tendencia=="lm") p <- p + geom_smooth(method="lm", se=F, color="#CB181D")
-    if(input$tipo_tendencia=="loess") p <- p + geom_smooth(method="loess", se=F, color="#009DDC")
-    ggplotly(p, tooltip="text")
-  })
   
-  # output$plot_heatmap <- renderPlot({
-  #   df <- dados_eps_unicos() |> mutate(
-  #     v_grp = cut(us_viewers_in_millions, breaks=quantile(us_viewers_in_millions,probs=0:4/4), include.lowest=T, labels=c("Baixa","Média-","Média+","Alta")),
-  #     r_grp = cut(imdb_rating, breaks=quantile(imdb_rating,probs=0:4/4), include.lowest=T, labels=c("Baixa","Média-","Média+","Alta"))
-  #   )
-  #   if(nrow(df)<5) return(NULL)
-  #   ggplot(df %>% count(v_grp, r_grp), aes(v_grp, r_grp, fill=n)) + geom_tile(color="white") + geom_text(aes(label=n), size=5) +
-  #     scale_fill_gradient(low="#FFF5F0", high="#CB181D") + labs(x="Audiência", y="Nota") + theme_minimal()
-  # })
+  output$plot_scatter_corr <- renderPlotly({
+    p <- dados_eps_unicos() %>% 
+      ggplot(aes(x = us_viewers_in_millions, y = imdb_rating)) +
+      geom_point(aes(color = season, text = paste("Título:", title)), alpha = 0.7, size = 2) +
+      scale_color_viridis_c(option = "plasma", name = "Temporada", direction = -1) +
+      scale_x_continuous(labels = scales::label_number(suffix = " mi")) +
+      labs(
+        title = "Evolução de 'The Simpsons': Audiência vs. Qualidade",
+        x = "Audiência nos EUA (Milhões)",
+        y = "Nota IMDb"
+      ) +
+
+      theme_minimal() +
+      theme(
+        plot.title = element_text(size = 16, face = "bold", color = "#2c3e50"),
+        plot.subtitle = element_text(size = 12, color = "#7f8c8d", margin = margin(b = 10)),
+        legend.position = "right",
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_line(color = "grey90"),
+        axis.text = element_text(size = 11, color = "black"),
+        axis.title = element_text(face = "bold")
+      )
+
+    if (!is.null(input$tipo_tendencia)) {
+      
+      if (input$tipo_tendencia == "lm") {
+        p <- p + geom_smooth(method = "lm", se = FALSE, color = "#CB181D", linewidth = 1)
+      }
+      
+      if (input$tipo_tendencia == "loess") {
+        p <- p + geom_smooth(method = "loess", se = FALSE, color = "#009DDC", linewidth = 1)
+      }
+    }
+    ggplotly(p, tooltip = "text")
+  })
   
   output$tabela_polemicos <- renderDT({
     # Episódios com alta view e nota baixa (Ex: Quartil 4 de view e Quartil 1 de nota)
@@ -155,15 +169,59 @@ server <- function(input, output) {
   #6: STATS TEMPORADA
   output$plot_boxplot <- renderPlotly({
     p <- ggplot(dados_eps_unicos(), aes(factor(season), imdb_rating)) + 
-      geom_boxplot(fill="#FED90F", outlier.color="red") + theme_minimal() + labs(x="Temporada", y="Nota")
-    ggplotly(p) |> layout(boxmode="group")
+      geom_jitter(width = 0.2, color = "#333333", size = 1, alpha = 0.4) +
+      geom_boxplot(fill = "#FED90F", color = "black", alpha = 0.6, outlier.shape = NA) + 
+      
+      theme_minimal() + 
+      labs(x = "Temporada", y = "Nota")
+    
+    ggplotly(p) %>% layout(boxmode = "group")
   })
   
+  # ABA 6: GRÁFICO DE CORRELAÇÃO
   output$plot_corr_line <- renderPlotly({
-    df <- dados_eps_unicos() |> group_by(season) |> summarise(c = cor(us_viewers_in_millions, imdb_rating))
-    p <- ggplot(df, aes(season, c)) + geom_line(color="#009DDC") + geom_point(aes(text=round(c,3)), color="black") +
-      geom_hline(yintercept=0, linetype="dashed") + theme_minimal() + labs(x="Temporada", y="Correlação")
-    ggplotly(p)
+    
+    corr_by_season_votes <- dados_eps_unicos() %>%
+      group_by(season) %>%
+      summarise(
+        n = n(),
+        corr = cor(us_viewers_in_millions, imdb_votes, use = "complete.obs", method = "pearson")
+      ) %>%
+      ungroup() %>%
+      filter(!is.na(corr)) # Remove temporadas onde não foi possível calcular
+    
+    p <- ggplot(corr_by_season_votes, aes(x = season, y = corr)) +
+      
+      geom_hline(yintercept = 0, linetype = "dashed", color = "gray60") +
+      geom_segment(aes(xend = season, yend = 0, color = corr), linewidth = 1) +
+      geom_point(aes(color = corr, 
+                     text = paste("Temporada:", season, 
+                                  "<br>Correlação (r):", round(corr, 3))), 
+                 size = 4) +
+      geom_text(aes(label = round(corr, 2)), 
+                nudge_y = 0.05, # Empurra o texto 0.05 unidades para cima
+                size = 3, 
+                color = "#333333") +
+      
+      # Escalas e Eixos
+      scale_x_continuous(breaks = seq(min(corr_by_season_votes$season), 
+                                      max(corr_by_season_votes$season), 
+                                      by = 1)) +
+      
+      scale_color_gradient(low = "#e0aeb6", high = "#8b0000", name = "Força") +
+      scale_y_continuous(limits = c(min(0, min(corr_by_season_votes$corr) - 0.1), 
+                                    max(corr_by_season_votes$corr) + 0.25)) +
+      
+      labs(x = "Temporada", y = "Correlação de Pearson (r)") +
+      theme_minimal() +
+      theme(
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text.x = element_text(size = 9, angle = 0),
+        legend.position = "none"
+      )
+    
+    ggplotly(p, tooltip = "text")
   })
   
   output$tabela_resumo_season <- renderDT({

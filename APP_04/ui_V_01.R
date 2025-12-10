@@ -62,7 +62,7 @@ ui <- fluidPage(
   "))),
   
   titlePanel(
-    span("Os Simpsons Analytics", 
+    span("Os Simpsons em Dados", 
          style = "color: #337AB7; font-weight: bold; font-family: sans-serif;") 
 
   ),
