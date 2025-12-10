@@ -4,7 +4,7 @@ library(tidytext)
 library(wordcloud)
 library(RColorBrewer)
 library(plotly)
-
+ 
 getwd()
 setwd('C:/Users/Eri/Documents/Simpsons-Shiny-APP/')
 

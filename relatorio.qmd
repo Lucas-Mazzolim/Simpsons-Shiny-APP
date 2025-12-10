@@ -18,8 +18,8 @@ crossref:
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #pacotes necessários
-install.packages("tidytuesdayR")
-install.packages("tidyverse")
+# install.packages("tidytuesdayR")
+# install.packages("tidyverse")
 
 library(tidytuesdayR)
 library(tidyverse)
@@ -445,7 +445,7 @@ summary(model)
 
 ```
 
-Já em relação a correlação entre audiência e notas, a correlação de Pearson calculada no conjunto completo dos dados indica uma relação positiva e de magnitude moderada (r = 0,45 no conjunto geral; variando de 0,09 a 0,66 por temporada). Apesar da variabilidade sazonal, observa-se que, a partir da 24ª temporada, os coeficientes tornam-se consistentemente mais elevados (0,43–0,66), sugerindo que essa associação se fortalece nas temporadas mais recentes. Essa tendência é corroborada pelo modelo de regressão linear simples, que apresenta um coeficiente angular positivo e estatisticamente significativo (β = 28,92, p < 0,001). Esse resultado indica que episódios com maior audiência tendem a receber um número maior de votos na plataforma, e esse padrão não ocorre ao acaso. O modelo apresenta ainda um R² de 0,20, revelando que aproximadamente 20% da variação no número de votos pode ser explicada apenas pela audiência.
+Já em relação a correlação entre audiência e notas, a correlação de Pearson calculada no conjunto completo dos dados indica uma relação positiva e de magnitude moderada (r = 0,45 no conjunto geral; variando de 0,09 a 0,66 por temporada). Apesar da variabilidade sazonal, observa-se que, a partir da 24ª temporada, os coeficientes tornam-se consistentemente mais elevados (0,43–0,66), sugerindo que essa associação se fortalece nas temporadas mais recentes. Essa tendência é corroborada pelo modelo de regressão linear simples, que apresenta um coeficiente angular positivo e estatisticamente significativo (β = 28,92, p \< 0,001). Esse resultado indica que episódios com maior audiência tendem a receber um número maior de votos na plataforma, e esse padrão não ocorre ao acaso. O modelo apresenta ainda um R² de 0,20, revelando que aproximadamente 20% da variação no número de votos pode ser explicada apenas pela audiência.
 
 ```{r eval=FALSE}
 
@@ -742,11 +742,10 @@ A grande disparidade no volume de falas de Homer motivou a análise de uma poss�
 
 Por fim, em relação às limitações deste estudo, embora a base utilizada seja relativamente completa, ainda existem dados ausentes e incompletos, o que pode reduzir ligeiramente a precisão das estimativas. Além disso, a ausência de variáveis contextuais como horário de exibição, concorrência televisiva, estratégias de marketing ou presença de convidados especiais limita a capacidade de compreender plenamente os fatores que influenciam audiência, notas e engajamento. Outro ponto importante é o viés de auto-seleção inerente às avaliações do IMDb: muitas vezes, usuários motivados escolhem atribuir notas e votos, o que pode não refletir a opinião do público geral. Ademais, mudanças no padrão de consumo de mídia ao longo das décadas, com a transição da TV aberta para o streaming, tornam menos comparáveis os episódios de diferentes períodos, introduzindo variações não controladas na análise.
 
-
 # 5. Referências Bibliográficas
 
 1.  https://ggplot2.tidyverse.org/reference/geom_boxplot.html
 
 2.  WICKHAM, Hadley; GROLEMUND, Garrett. R for Data Science: Import, Tidy, Transform, Visualize, and Model Data. 1. ed. Sebastopol: O’Reilly Media, 2017.
 
-3. https://simpsons.fandom.com/pt-br/wiki/Wiki_Simpsons
+3.  https://simpsons.fandom.com/pt-br/wiki/Wiki_Simpsons

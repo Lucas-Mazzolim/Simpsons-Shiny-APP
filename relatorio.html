@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt" xml:lang="pt"><head>
 
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.6.42">
@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>relatorio</title>
+<title>Os Simpsons em Números</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -54,7 +54,27 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="relatorio_files/libs/clipboard/clipboard.min.js"></script>
@@ -69,42 +89,58 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="relatorio_files/libs/bootstrap/bootstrap-1bc8a17f135ab3d594c857e9f48e611b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
 
+<link rel="stylesheet" href="style.css">
 </head>
 
-<body class="fullcontent">
+<body>
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Índice</h2>
+   
+  <ul>
+  <li><a href="#introdução" id="toc-introdução" class="nav-link active" data-scroll-target="#introdução">1. Introdução</a></li>
+  <li><a href="#materiais-e-métodos" id="toc-materiais-e-métodos" class="nav-link" data-scroll-target="#materiais-e-métodos">2. Materiais e Métodos</a>
+  <ul class="collapse">
+  <li><a href="#conjunto-de-dados" id="toc-conjunto-de-dados" class="nav-link" data-scroll-target="#conjunto-de-dados">2.1. Conjunto de Dados</a></li>
+  <li><a href="#preparação-dos-dados" id="toc-preparação-dos-dados" class="nav-link" data-scroll-target="#preparação-dos-dados">2.2. Preparação dos Dados</a></li>
+  </ul></li>
+  <li><a href="#resultados-e-discussão" id="toc-resultados-e-discussão" class="nav-link" data-scroll-target="#resultados-e-discussão">3. Resultados e Discussão</a>
+  <ul class="collapse">
+  <li><a href="#audiência-e-avaliações-imdb" id="toc-audiência-e-avaliações-imdb" class="nav-link" data-scroll-target="#audiência-e-avaliações-imdb">3.1. Audiência e Avaliações IMDb</a></li>
+  <li><a href="#diálogos-dos-personagens" id="toc-diálogos-dos-personagens" class="nav-link" data-scroll-target="#diálogos-dos-personagens">3.2. Diálogos dos Personagens</a></li>
+  </ul></li>
+  <li><a href="#conclusão" id="toc-conclusão" class="nav-link" data-scroll-target="#conclusão">4. Conclusão</a></li>
+  <li><a href="#referências-bibliográficas" id="toc-referências-bibliográficas" class="nav-link" data-scroll-target="#referências-bibliográficas">5. Referências Bibliográficas</a></li>
+  </ul>
+</nav>
+</div>
 <main class="content" id="quarto-document-content">
 
-
-
-
-<p>—title: “Os Simpsons em Números” format: html editor: visual lang: pt toc: true fig-align: center fig-auto-id: true tbl-auto-id: true tbl-cap-location: bottom bibliography: referencia.bibcs l: estilo_abnt.csl css: style.css crossref: fig-prefix: “Gráfico” fig-title: “Gráfico” —</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 26
-      id episode_id number raw_text       speaking_line character_id location_id
-   &lt;dbl&gt;      &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;          &lt;lgl&gt;                &lt;dbl&gt;       &lt;dbl&gt;
-1 132917        473    128 Fbi Superviso… TRUE                  5734           6
-2 127110        452     61 Homer Simpson… TRUE                     2           2
-3 126516        450      1 Homer Simpson… TRUE                     2        3656
-4 126517        450      2 Homer Simpson… TRUE                     2        3656
-5 126520        450      5 Marge Simpson… TRUE                     1        3656
-6 126550        450     35 Grampa Simpso… TRUE                    31         354
-# ℹ 19 more variables: raw_character_text &lt;chr&gt;, raw_location_text &lt;chr&gt;,
-#   spoken_words &lt;chr&gt;, normalized_text &lt;chr&gt;, word_count &lt;dbl&gt;,
-#   imdb_rating &lt;dbl&gt;, imdb_votes &lt;dbl&gt;, number_in_season &lt;dbl&gt;,
-#   number_in_series &lt;dbl&gt;, original_air_date &lt;date&gt;, original_air_year &lt;dbl&gt;,
-#   production_code &lt;chr&gt;, season &lt;dbl&gt;, title &lt;chr&gt;,
-#   us_viewers_in_millions &lt;dbl&gt;, views &lt;dbl&gt;, name &lt;chr&gt;,
-#   normalized_name &lt;chr&gt;, gender &lt;chr&gt;</code></pre>
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Os Simpsons em Números</h1>
 </div>
-</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
 <section id="introdução" class="level1">
 <h1>1. Introdução</h1>
-<p>Os Simpsons é a série animada há mais tempo no ar na TV dos Estados Unidos. Sua estreia aconteceu no ano de 1989 e permanece no ar até hoje. <span class="citation" data-cites="BritannicaSimpsons">[@BritannicaSimpsons]</span></p>
-<p>Em mais de 30 anos de exibição, a série já se envolveu em inúmeras polêmicas, inclusive com o público brasileiro, graças a um episódio da 13ª temporada, que mostrava o Brasil como um lugar violento, onde as ruas eram infestadas de macacos e as pessoas se movimentavam dançando conga. <span class="citation" data-cites="CanaltechSimpsonsBrasil">[@CanaltechSimpsonsBrasil]</span> Ao longo dos anos, a audiência do show diminuiu consideravelmente, mas a família Simpson ainda se mantém relevante, com episódios assistidos por milhões de pessoas, não apenas nos Estados Unidos, mas em todo o mundo. <span class="citation" data-cites="SchneiderSimpsons">[@SchneiderSimpsons]</span></p>
+<p>Os Simpsons é a série animada há mais tempo no ar na TV dos Estados Unidos. Sua estreia aconteceu no ano de 1989 e permanece no ar até hoje. <span class="citation" data-cites="BritannicaSimpsons"><a href="#ref-BritannicaSimpsons" role="doc-biblioref">Encyclopædia Britannica (</a>)</span></p>
+<p>Em mais de 30 anos de exibição, a série já se envolveu em inúmeras polêmicas, inclusive com o público brasileiro, graças a um episódio da 13ª temporada, que mostrava o Brasil como um lugar violento, onde as ruas eram infestadas de macacos e as pessoas se movimentavam dançando conga. <span class="citation" data-cites="CanaltechSimpsonsBrasil"><a href="#ref-CanaltechSimpsonsBrasil" role="doc-biblioref">Canaltech (</a>)</span> Ao longo dos anos, a audiência do show diminuiu consideravelmente, mas a família Simpson ainda se mantém relevante, com episódios assistidos por milhões de pessoas, não apenas nos Estados Unidos, mas em todo o mundo. <span class="citation" data-cites="SchneiderSimpsons"><a href="#ref-SchneiderSimpsons" role="doc-biblioref">Schneider (2017</a>)</span></p>
 <p>Neste trabalho, será apresentada uma análise dos episódios das temporadas 21 a 27, exibidos entre os anos de 2010 a 2016, considerando dados de audiência, avaliação do público e caracaterísticas dos diálogos entre os personagens. Pretende-se avaliar as tendências de variação da audiência e da avaliação popular dos episódios ao longo do tempo, e também a existência de correlações entre essas duas variáveis. Serão verificadas, também, tendências de variação no volume de palavras faladas pelos personagens, possíveis correlações entre este volume e a avaliação popular, além de diferenças relacionadas ao gênero dos personagens.</p>
 <p>A análise das avaliações do público será feita com base nas notas dadas aos episódios pelos usuários do <a href="http://www.imdb.com">IMDb</a>, um popular site de informações sobre produções audiovisuais, em que os usuários podem dar notas de 1 a 10 aos programas.</p>
 </section>
@@ -114,17 +150,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="conjunto-de-dados">2.1. Conjunto de Dados</h2>
 <p>O conjunto de dados foi obtido a partir do repositório GitHub do projeto Tidy Tuesday, que disponibiliza, semanalmente, conjuntos de dados para desafios e prática da comunidade de ciência de dados. Para a obtenção dos dados, utilizou-se o pacote <em>tidytuesdayR</em> através do RStudio. O código R para obtenção dos dados é mostrado a seguir:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"tidytuesdayR"</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>tuesdata <span class="ot">&lt;-</span> tidytuesdayR<span class="sc">::</span><span class="fu">tt_load</span>(<span class="st">'2025-02-04'</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>simpsons_characters <span class="ot">&lt;-</span> tuesdata<span class="sc">$</span>simpsons_characters</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>simpsons_episodes <span class="ot">&lt;-</span> tuesdata<span class="sc">$</span>simpsons_episodes</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>simpsons_locations <span class="ot">&lt;-</span> tuesdata<span class="sc">$</span>simpsons_locations</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>simpsons_script_lines <span class="ot">&lt;-</span> tuesdata<span class="sc">$</span>simpsons_script_lines</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"tidytuesdayR"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>tuesdata <span class="ot">&lt;-</span> tidytuesdayR<span class="sc">::</span><span class="fu">tt_load</span>(<span class="st">'2025-02-04'</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>simpsons_characters <span class="ot">&lt;-</span> tuesdata<span class="sc">$</span>simpsons_characters</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>simpsons_episodes <span class="ot">&lt;-</span> tuesdata<span class="sc">$</span>simpsons_episodes</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>simpsons_locations <span class="ot">&lt;-</span> tuesdata<span class="sc">$</span>simpsons_locations</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>simpsons_script_lines <span class="ot">&lt;-</span> tuesdata<span class="sc">$</span>simpsons_script_lines</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><br>O conjunto é composto por 4 arquivos de valores separados por vírgulas:<br></p>
-<table class="caption-top table">
+<table class="table">
 <colgroup>
 <col style="width: 33%">
 <col style="width: 33%">
@@ -165,11 +201,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="tbl-personagens" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-tbl-cap-location="top">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-personagens-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;1: Estrutura - Tabela Personagens
+Tabela&nbsp;1: Estrutura - Tabela Personagens
 </figcaption>
 <div aria-describedby="tbl-personagens-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="do-not-create-environment cell caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<table class="do-not-create-environment cell table table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">Nome da Coluna</th>
@@ -211,11 +247,11 @@ Table&nbsp;1: Estrutura - Tabela Personagens
 <div id="tbl-episodios" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-tbl-cap-location="top">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-episodios-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;2: Estrutura - Tabela Episódios
+Tabela&nbsp;2: Estrutura - Tabela Episódios
 </figcaption>
 <div aria-describedby="tbl-episodios-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="do-not-create-environment cell caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<table class="do-not-create-environment cell table table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">Nome da Coluna</th>
@@ -307,11 +343,11 @@ Table&nbsp;2: Estrutura - Tabela Episódios
 <div id="tbl-locais" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-tbl-cap-location="top">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-locais-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;3: Estrutura - Tabela Locais
+Tabela&nbsp;3: Estrutura - Tabela Locais
 </figcaption>
 <div aria-describedby="tbl-locais-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="do-not-create-environment cell caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<table class="do-not-create-environment cell table table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">Nome da Coluna</th>
@@ -348,11 +384,11 @@ Table&nbsp;3: Estrutura - Tabela Locais
 <div id="tbl-dialogos" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-tbl-cap-location="top">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-dialogos-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;4: Estrutura - Tabela Diálogos
+Tabela&nbsp;4: Estrutura - Tabela Diálogos
 </figcaption>
 <div aria-describedby="tbl-dialogos-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="do-not-create-environment cell caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<table class="do-not-create-environment cell table table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">Nome da Coluna</th>
@@ -440,28 +476,28 @@ Table&nbsp;4: Estrutura - Tabela Diálogos
 <h2 class="anchored" data-anchor-id="preparação-dos-dados">2.2. Preparação dos Dados</h2>
 <p>Inicialmente, para viabilizar as análises de audiência dos episódios, a tabela <code>simpsons_episodes</code> foi filtrada para remoção de observações NA das variáveis de audiência e avaliação IMDb, identificadas como <code>us_viewers_in_millions</code> e <code>imdb_rating</code>. Também foram excluídas as colunas <code>image_url e video_url</code>, que não teriam aplicabilidade para as análises desejadas. Por fim, foram limpos os dados da temporada 28 que estavam incompletos no conjunto de dados. O preparo da tabela foi realizado utilizando o código a seguir:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>episodes_clean <span class="ot">&lt;-</span> simpsons_episodes <span class="sc">%&gt;%</span> </span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(us_viewers_in_millions),</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>         <span class="sc">!</span><span class="fu">is.na</span>(imdb_rating),season <span class="sc">!=</span> <span class="dv">28</span> ) <span class="sc">%&gt;%</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(image_url,video_url))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>episodes_clean <span class="ot">&lt;-</span> simpsons_episodes <span class="sc">%&gt;%</span> </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(us_viewers_in_millions),</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>         <span class="sc">!</span><span class="fu">is.na</span>(imdb_rating),season <span class="sc">!=</span> <span class="dv">28</span> ) <span class="sc">%&gt;%</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(image_url,video_url))</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Para trabalhar com os diálogos dos personagens, foram unidas as tabelas de episódios, <code>simpsons_episodes</code> e de diálogos, <code>simpsons_script_lines</code>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># script &lt;- simpsons_script_lines %&gt;%</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   left_join(simpsons_episodes %&gt;% select(id, season), </span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">#             by = c("episode_id" = "id"))</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>script <span class="ot">&lt;-</span> simpsons_script_lines <span class="sc">%&gt;%</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(raw_character_text)) <span class="sc">%&gt;%</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(simpsons_episodes <span class="sc">%&gt;%</span> <span class="fu">select</span>(id, season), </span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"episode_id"</span> <span class="ot">=</span> <span class="st">"id"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># script &lt;- simpsons_script_lines %&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   left_join(simpsons_episodes %&gt;% select(id, season), </span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#             by = c("episode_id" = "id"))</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>script <span class="ot">&lt;-</span> simpsons_script_lines <span class="sc">%&gt;%</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(raw_character_text)) <span class="sc">%&gt;%</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(simpsons_episodes <span class="sc">%&gt;%</span> <span class="fu">select</span>(id, season), </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"episode_id"</span> <span class="ot">=</span> <span class="st">"id"</span>))</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>E finalmente, eliminaram-se as linhas da tabela que não correspondiam a diálogos, onde a coluna <code>spoken_words</code>encontrava-se vazia ou com valor NA e as linhas cuja varável <code>raw_character_text</code> continham NA’s, uma vez que esses valores não traziam benefícios nenhum a análise.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>frases_com_personagem <span class="ot">&lt;-</span> script <span class="sc">%&gt;%</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(simpsons_characters, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"character_id"</span> <span class="ot">=</span> <span class="st">"id"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(spoken_words), spoken_words <span class="sc">!=</span> <span class="st">""</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(name, spoken_words, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>frases_com_personagem <span class="ot">&lt;-</span> script <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(simpsons_characters, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"character_id"</span> <span class="ot">=</span> <span class="st">"id"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(spoken_words), spoken_words <span class="sc">!=</span> <span class="st">""</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(name, spoken_words, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Estes são os passos básicos de tratamento, utilizados para limpar e preparar todo o conjunto de dados para análise. Gráficos e tabelas construídas podem utilizar passos adicionais específicos para selecionar, filtrar e resumir os dados de forma apropriada à visualização desejada.</p>
 </section>
@@ -483,7 +519,7 @@ Table&nbsp;4: Estrutura - Tabela Diálogos
 <img src="relatorio_files/figure-html/fig-views-season-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-views-season-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Variação da audiência por temporada
+Gráfico&nbsp;1: Variação da audiência por temporada
 </figcaption>
 </figure>
 </div>
@@ -499,7 +535,7 @@ Figure&nbsp;1: Variação da audiência por temporada
 <img src="relatorio_files/figure-html/fig-boxplot-imdb-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-boxplot-imdb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: Boxplot: Notas IMDb por temporada
+Gráfico&nbsp;2: Boxplot: Notas IMDb por temporada
 </figcaption>
 </figure>
 </div>
@@ -513,7 +549,7 @@ Figure&nbsp;2: Boxplot: Notas IMDb por temporada
 <img src="relatorio_files/figure-html/fig-views-nota-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-views-nota-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: Correlação: Audiência x Notas IMDb
+Gráfico&nbsp;3: Correlação: Audiência x Notas IMDb
 </figcaption>
 </figure>
 </div>
@@ -527,7 +563,7 @@ Figure&nbsp;3: Correlação: Audiência x Notas IMDb
 <img src="relatorio_files/figure-html/fig-corr-temporada-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-corr-temporada-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4: Evolução da correlação de Pearson
+Gráfico&nbsp;4: Evolução da correlação de Pearson
 </figcaption>
 </figure>
 </div>
@@ -536,31 +572,31 @@ Figure&nbsp;4: Evolução da correlação de Pearson
 <p>A análise das notas dadas aos episódios por temporada, mostrada no <a href="#fig-boxplot-imdb" class="quarto-xref">Gráfico&nbsp;2</a> acima mostrou haver pouca variação média das notas ao longo do tempo. Considerando este dado em conjunto com a queda de audiência vista anteriormente, analisou-se a existência de correlação entre as variáveis de audiência e notas, e entre as variaveis audiência e quantidade de votos, tanto visualmente quanto através do coeficiente de correlação de Pearson.</p>
 <p>Em relação a correlação entre audiência e notas, o coeficiente de correlação de Pearson calculado foi de r = 0,112, indicando uma correlação positiva, porém fraca. Essa tendência é confirmada pelo modelo de regressão linear simples (β = 0,0247; p = 0,175), cujo coeficiente inclinado não apresenta significância estatística. Além disso, o modelo explica menos de 1,3% da variabilidade das notas (R² = 0,0125), reforçando que a audiência não é um preditor relevante da avaliação crítica dos episódios. Por fim, o gráfico <a href="#fig-views-nota" class="quarto-xref">Gráfico&nbsp;3</a> mostra de forma visual que não parece haver correlação significativa entre as variáveis. O que é confirmado pelos coeficientes de Pearson calculados para cada temporada, vistos no <a href="#fig-corr-temporada" class="quarto-xref">Gráfico&nbsp;4</a>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>correlation <span class="ot">&lt;-</span> <span class="fu">cor</span>(episodes_clean<span class="sc">$</span>us_viewers_in_millions,</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                   episodes_clean<span class="sc">$</span>imdb_rating,</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">method =</span> <span class="st">"pearson"</span>)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>corr_by_season_rating <span class="ot">&lt;-</span> episodes_clean <span class="sc">%&gt;%</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(season) <span class="sc">%&gt;%</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="fu">n</span>(),</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">corr =</span> <span class="fu">cor</span>(us_viewers_in_millions, imdb_rating, <span class="at">use =</span> <span class="st">"complete.obs"</span>, <span class="at">method =</span> <span class="st">"pearson"</span>)</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(imdb_rating <span class="sc">~</span> us_viewers_in_millions, <span class="at">data =</span> episodes_clean)</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>correlation <span class="ot">&lt;-</span> <span class="fu">cor</span>(episodes_clean<span class="sc">$</span>us_viewers_in_millions,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                   episodes_clean<span class="sc">$</span>imdb_rating,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">method =</span> <span class="st">"pearson"</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>corr_by_season_rating <span class="ot">&lt;-</span> episodes_clean <span class="sc">%&gt;%</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(season) <span class="sc">%&gt;%</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="fu">n</span>(),</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">corr =</span> <span class="fu">cor</span>(us_viewers_in_millions, imdb_rating, <span class="at">use =</span> <span class="st">"complete.obs"</span>, <span class="at">method =</span> <span class="st">"pearson"</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(imdb_rating <span class="sc">~</span> us_viewers_in_millions, <span class="at">data =</span> episodes_clean)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Já em relação a correlação entre audiência e notas, a correlação de Pearson calculada no conjunto completo dos dados indica uma relação positiva e de magnitude moderada (r = 0,45 no conjunto geral; variando de 0,09 a 0,66 por temporada). Apesar da variabilidade sazonal, observa-se que, a partir da 24ª temporada, os coeficientes tornam-se consistentemente mais elevados (0,43–0,66), sugerindo que essa associação se fortalece nas temporadas mais recentes. Essa tendência é corroborada pelo modelo de regressão linear simples, que apresenta um coeficiente angular positivo e estatisticamente significativo (β = 28,92, p &lt; 0,001). Esse resultado indica que episódios com maior audiência tendem a receber um número maior de votos na plataforma, e esse padrão não ocorre ao acaso. O modelo apresenta ainda um R² de 0,20, revelando que aproximadamente 20% da variação no número de votos pode ser explicada apenas pela audiência.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>corr_by_season_votes <span class="ot">&lt;-</span> episodes_clean <span class="sc">%&gt;%</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(season) <span class="sc">%&gt;%</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="fu">n</span>(),</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">corr =</span> <span class="fu">cor</span>(us_viewers_in_millions, imdb_votes, <span class="at">use =</span> <span class="st">"complete.obs"</span>, <span class="at">method =</span> <span class="st">"pearson"</span>)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>model_votes <span class="ot">&lt;-</span> <span class="fu">lm</span>(imdb_votes <span class="sc">~</span> us_viewers_in_millions, <span class="at">data =</span> episodes_clean)</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_votes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>corr_by_season_votes <span class="ot">&lt;-</span> episodes_clean <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(season) <span class="sc">%&gt;%</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="fu">n</span>(),</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">corr =</span> <span class="fu">cor</span>(us_viewers_in_millions, imdb_votes, <span class="at">use =</span> <span class="st">"complete.obs"</span>, <span class="at">method =</span> <span class="st">"pearson"</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>model_votes <span class="ot">&lt;-</span> <span class="fu">lm</span>(imdb_votes <span class="sc">~</span> us_viewers_in_millions, <span class="at">data =</span> episodes_clean)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_votes)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="diálogos-dos-personagens" class="level2">
@@ -577,7 +613,7 @@ A análise dos diálogos fixou-se, principalmente, na quantidade de palavras ou 
 <img src="relatorio_files/figure-html/fig-mais-falam-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mais-falam-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;5: Personagens que mais falam
+Gráfico&nbsp;5: Personagens que mais falam
 </figcaption>
 </figure>
 </div>
@@ -595,7 +631,7 @@ Figure&nbsp;5: Personagens que mais falam
 <img src="relatorio_files/figure-html/fig-tamanho-falas-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tamanho-falas-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;6: Personagens conforme média de palavras por fala
+Gráfico&nbsp;6: Personagens conforme média de palavras por fala
 </figcaption>
 </figure>
 </div>
@@ -604,12 +640,9 @@ Figure&nbsp;6: Personagens conforme média de palavras por fala
 <div class="cell" data-tbl-colwidths="[20,20,60]">
 <div id="tbl-frases" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-tbl-colwidths="[20,20,60]">
 <figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-frases-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;5: Expressões mais repetidas
-</figcaption>
 <div aria-describedby="tbl-frases-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="do-not-create-environment cell caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<table class="do-not-create-environment cell table table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">Personagem</th>
@@ -689,6 +722,9 @@ Table&nbsp;5: Expressões mais repetidas
 
 </div>
 </div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-frases-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;5: Expressões mais repetidas
+</figcaption>
 </figure>
 </div>
 </div>
@@ -707,7 +743,7 @@ Na sequência das análises, avaliou-se a variação entre as temporadas do volu
 <img src="relatorio_files/figure-html/fig-evol-falas-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-evol-falas-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;7: Evolução do volume de falas
+Gráfico&nbsp;7: Evolução do volume de falas
 </figcaption>
 </figure>
 </div>
@@ -721,7 +757,7 @@ Figure&nbsp;7: Evolução do volume de falas
 <img src="relatorio_files/figure-html/fig-rating-genero-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rating-genero-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;8: Dispersão: Notas IMDb x Falas por gênero
+Gráfico&nbsp;8: Dispersão: Notas IMDb x Falas por gênero
 </figcaption>
 </figure>
 </div>
@@ -735,7 +771,7 @@ Figure&nbsp;8: Dispersão: Notas IMDb x Falas por gênero
 <img src="relatorio_files/figure-html/fig-falas-genero-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-falas-genero-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;9: Razão do volume de falas por gênero
+Gráfico&nbsp;9: Razão do volume de falas por gênero
 </figcaption>
 </figure>
 </div>
@@ -760,9 +796,20 @@ Figure&nbsp;9: Razão do volume de falas por gênero
 <li><p>WICKHAM, Hadley; GROLEMUND, Garrett. R for Data Science: Import, Tidy, Transform, Visualize, and Model Data. 1. ed.&nbsp;Sebastopol: O’Reilly Media, 2017.</p></li>
 <li><p>https://simpsons.fandom.com/pt-br/wiki/Wiki_Simpsons</p></li>
 </ol>
+
 </section>
 
-</main>
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">Referências</h2><div id="refs" class="references csl-bib-body" data-entry-spacing="0" role="list">
+<div id="ref-CanaltechSimpsonsBrasil" class="csl-entry" role="listitem">
+CANALTECH. 5 episódios de Os Simpsons que citam o Brasil ou os brasileiros. Disponível em: &lt;<a href="https://canaltech.com.br/series/os-simpsons-episodios-citam-o-brasil-ou-os-brasileiros/">https://canaltech.com.br/series/os-simpsons-episodios-citam-o-brasil-ou-os-brasileiros/</a>&gt;. Acesso em: 2/12/2025.
+</div>
+<div id="ref-BritannicaSimpsons" class="csl-entry" role="listitem">
+ENCYCLOPÆDIA BRITANNICA. The Simpsons | Creators, Characters, Synopsis, &amp; Facts. Disponível em: &lt;<a href="https://www.britannica.com/topic/The-Simpsons">https://www.britannica.com/topic/The-Simpsons</a>&gt;. Acesso em: 2/12/2025.
+</div>
+<div id="ref-SchneiderSimpsons" class="csl-entry" role="listitem">
+SCHNEIDER, T. W. The Simpsons by the Data. Disponível em: &lt;<a href="https://toddwschneider.com/posts/the-simpsons-by-the-data/">https://toddwschneider.com/posts/the-simpsons-by-the-data/</a>&gt;. Acesso em: 2/12/2025.
+</div>
+</div></section></div></main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
@@ -807,12 +854,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // flash "checked"
     button.classList.add('code-copy-button-checked');
     var currentTitle = button.getAttribute("title");
-    button.setAttribute("title", "Copied!");
+    button.setAttribute("title", "Copiada");
     let tooltip;
     if (window.bootstrap) {
       button.setAttribute("data-bs-toggle", "tooltip");
       button.setAttribute("data-bs-placement", "left");
-      button.setAttribute("data-bs-title", "Copied!");
+      button.setAttribute("data-bs-title", "Copiada");
       tooltip = new bootstrap.Tooltip(button, 
         { trigger: "manual", 
           customClass: "code-copy-button-tooltip",
