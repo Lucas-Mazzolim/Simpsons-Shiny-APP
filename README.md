@@ -48,6 +48,3 @@ O aplicativo contém 6 abas principais:
 [Aba 5]: Views x Notas
 
 [Aba 6]: Stats da Temporada
-
-# Ou via console:
-rmark
