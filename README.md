@@ -50,4 +50,4 @@ O aplicativo contém 6 abas principais:
 [Aba 6]: Stats da Temporada
 
 # Ou via console:
-rmarkdown::render("relatorio/seu_relatorio.Rmd")
+rmark
